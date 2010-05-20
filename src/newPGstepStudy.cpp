@@ -1314,6 +1314,55 @@ void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, do
 
 }
 
+void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3)
+{
+
+	output.clear();
+
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+
+		if(i < t2)
+		{
+
+			output.push_back(0);
+
+		}
+		else
+		{
+
+			output.push_back( -2*heightMax/pow(t3-t2,3.0)*pow(i-t2,3.0) + 3*heightMax/pow(t3-t2,2.0)*pow(i-t2,2.0));
+
+		}
+
+	}
+
+}
+
+void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3)
+{
+
+	output.clear();
+
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+
+		if(i < t1)
+		{
+
+			output.push_back( -2*heightMax/pow(0-t1,3.0)*pow(i-t1,3.0)  +  3*heightMax/pow(0-t1,2.0)*pow(i-t1,2.0));
+
+		}
+		else 
+		{
+
+			output.push_back(0);
+
+		}
+
+	}
+
+}
 
 void CnewPGstepStudy::genFOOTorientation(vector<double> & output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5)
 {
@@ -1770,6 +1819,208 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 	stepF.t5 = t5;
 }
 
+
+void CnewPGstepStudy::produceOneUPHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable)
+{
+
+	fb.clear();
+	fbZMP.clear();	
+
+	vector<double> comTrajX;
+	vector<double> zmpTrajX;
+	genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, 0, vectUPHalfStep_input[0], t1/2, t1*3/4, t1, t2, t3);
+
+	vector<double> comTrajY;
+	vector<double> zmpTrajY;
+	genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, 0, vectUPHalfStep_input[1], t1/2, t1*3/4, t1, t2, t3);
+
+	vector<double> footXtraj;
+	vector<double> footYtraj;
+	int leftRightCoef = 0;	
+	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], 0.02, t1, t2, t3, t3, t3);
+
+	vector<double> footHeight;
+	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], t1, t2, t3);
+
+	vector<double> footOrient;
+	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, 0.02, t1, t2, t3, t3, t3);
+
+	vector<double> waistOrient;
+	genWAISTorientation(waistOrient, incrTime, 0, 0, 0.02, t1, t2, t3, t3, t3);
+
+
+	int count = -1;
+
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+		count++;
+		
+		MAL_VECTOR(,double) jointsRadValues;
+		genFullBodyConfig(count, jointsRadValues, comTrajX, comTrajY, waistOrient, footXtraj, footYtraj, footOrient, footHeight, vectUPHalfStep_input[0], vectUPHalfStep_input[1], leftOrRightFootStable, zc);
+
+		/*
+		fb << i << " ";
+		for(int j = 0; j < 42; j++)
+		{
+			fb << jointsRadValues[j] << " " ;
+		}
+		fb << endl;
+
+		fbZMP << i << " " << (zmpTrajX[count]-comTrajX[count])*cos(-waistOrient[count]*PI/180)
+			-(zmpTrajY[count]-comTrajY[count])*sin(-waistOrient[count]*PI/180) << " " <<
+			(zmpTrajX[count]-comTrajX[count])*sin(-waistOrient[count]*PI/180)
+			+(zmpTrajY[count]-comTrajY[count])*cos(-waistOrient[count]*PI/180) << " " << -zc-0.105 << endl;
+		*/
+
+		vector<double> tmpvectCOM;
+		vector<double> tmpvectZMP;		
+		tmpvectCOM.push_back(i);  		
+		for(int j = 0; j < 42; j++)
+		{
+			tmpvectCOM.push_back(jointsRadValues[j]);
+		}
+		fb.push_back(tmpvectCOM);
+
+		tmpvectZMP.push_back(i);
+		tmpvectZMP.push_back( (zmpTrajX[count]-comTrajX[count])*cos(-waistOrient[count]*PI/180)
+			-(zmpTrajY[count]-comTrajY[count])*sin(-waistOrient[count]*PI/180)  );
+		tmpvectZMP.push_back( (zmpTrajX[count]-comTrajX[count])*sin(-waistOrient[count]*PI/180)
+			+(zmpTrajY[count]-comTrajY[count])*cos(-waistOrient[count]*PI/180)  );
+		tmpvectZMP.push_back(  -zc-0.105   );
+		fbZMP.push_back(tmpvectZMP);	
+
+	}
+}
+
+void CnewPGstepStudy::produceOneUPHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable)
+{
+	vector<vector<double> > fbVect;
+	vector<vector<double> > fbZMPVect;
+
+	produceOneUPHalfStep(fbVect, fbZMPVect, incrTime, zc, g, t1, t2, t3, vectUPHalfStep_input, leftOrRightFootStable);
+	
+	int count = -1;
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+		count++;
+
+		fb << fbVect[count][0] << " ";
+		for(int j = 0; j < 42; j++)
+		{
+			fb << fbVect[count][j+1] << " " ;
+		}
+		fb << endl;
+
+		fbZMP << fbZMPVect[count][0] << " " << fbZMPVect[count][1] << " " <<
+			fbZMPVect[count][2] << " " << fbZMPVect[count][3] << endl;
+		
+	}
+
+}
+
+
+void CnewPGstepStudy::produceOneDOWNHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable)
+{
+
+	fb.clear();
+	fbZMP.clear();	
+
+	vector<double> comTrajX;
+	vector<double> zmpTrajX;
+	genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, 0, vectDOWNHalfStep_input[2]/2, t1/2, t1*3/4, t1, t2, t3);
+
+	vector<double> comTrajY;
+	vector<double> zmpTrajY;
+	genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, 0, vectDOWNHalfStep_input[3]/2, t1/2, t1*3/4, t1, t2, t3);
+
+	vector<double> footXtraj;
+	vector<double> footYtraj;
+	int leftRightCoef = 0;	
+	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
+	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], 0.02, 0, 0, t1, t2, t3);
+
+	vector<double> footHeight;
+	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], t1, t2, t3);
+
+	vector<double> footOrient;
+	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.02, 0, 0, t1, t2, t3);
+
+	vector<double> waistOrient;
+	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.02, 0, 0, t1, t2, t3);
+
+
+	int count = -1;
+
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+		count++;
+		
+		MAL_VECTOR(,double) jointsRadValues;
+		genFullBodyConfig(count, jointsRadValues, comTrajX, comTrajY, waistOrient, footXtraj, footYtraj, footOrient, footHeight, 0, 0, leftOrRightFootStable, zc);
+
+		/*
+		fb << i << " ";
+		for(int j = 0; j < 42; j++)
+		{
+			fb << jointsRadValues[j] << " " ;
+		}
+		fb << endl;
+
+		fbZMP << i << " " << (zmpTrajX[count]-comTrajX[count])*cos(-waistOrient[count]*PI/180)
+			-(zmpTrajY[count]-comTrajY[count])*sin(-waistOrient[count]*PI/180) << " " <<
+			(zmpTrajX[count]-comTrajX[count])*sin(-waistOrient[count]*PI/180)
+			+(zmpTrajY[count]-comTrajY[count])*cos(-waistOrient[count]*PI/180) << " " << -zc-0.105 << endl;
+		*/
+
+		vector<double> tmpvectCOM;
+		vector<double> tmpvectZMP;		
+		tmpvectCOM.push_back(i);  		
+		for(int j = 0; j < 42; j++)
+		{
+			tmpvectCOM.push_back(jointsRadValues[j]);
+		}
+		fb.push_back(tmpvectCOM);
+
+		tmpvectZMP.push_back(i);
+		tmpvectZMP.push_back( (zmpTrajX[count]-comTrajX[count])*cos(-waistOrient[count]*PI/180)
+			-(zmpTrajY[count]-comTrajY[count])*sin(-waistOrient[count]*PI/180)  );
+		tmpvectZMP.push_back( (zmpTrajX[count]-comTrajX[count])*sin(-waistOrient[count]*PI/180)
+			+(zmpTrajY[count]-comTrajY[count])*cos(-waistOrient[count]*PI/180)  );
+		tmpvectZMP.push_back(  -zc-0.105   );
+		fbZMP.push_back(tmpvectZMP);	
+
+	}
+}
+
+void CnewPGstepStudy::produceOneDOWNHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable)
+{
+	vector<vector<double> > fbVect;
+	vector<vector<double> > fbZMPVect;
+
+	produceOneDOWNHalfStep(fbVect, fbZMPVect, incrTime, zc, g, t1, t2, t3, vectDOWNHalfStep_input, leftOrRightFootStable);
+	
+	int count = -1;
+	for(double i = 0.0 ; i < t3 ; i += incrTime)
+	{
+		count++;
+
+		fb << fbVect[count][0] << " ";
+		for(int j = 0; j < 42; j++)
+		{
+			fb << fbVect[count][j+1] << " " ;
+		}
+		fb << endl;
+
+		fbZMP << fbZMPVect[count][0] << " " << fbZMPVect[count][1] << " " <<
+			fbZMPVect[count][2] << " " << fbZMPVect[count][3] << endl;
+		
+	}
+
+}
+
+
+
 void CnewPGstepStudy::produceSeqSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
 {	
 
@@ -1823,12 +2074,12 @@ void CnewPGstepStudy::produceSeqSteps(vector<vector<double> > & fb, vector<vecto
 
 }
 
-void CnewPGstepStudy::produceSeqSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable)
+void CnewPGstepStudy::produceSeqSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
 {
 	vector<vector<double> > fbVect;
 	vector<vector<double> > fbZMPVect;
 
-	produceSeqSteps(fbVect, fbZMPVect, incrTime, zc, g, stepHeight, t1, t2, t3, t4, t5, vectStep_input, leftOrRightFootStable);
+	produceSeqSteps(fbVect, fbZMPVect, incrTime, zc, g, stepHeight, t1, t2, t3, t4, t5, vectSteps_input, leftOrRightFootStable);
 
 	for(unsigned int count = 0 ; count < fbVect.size() ; count++)
 	{
@@ -1845,6 +2096,126 @@ void CnewPGstepStudy::produceSeqSteps(ofstream & fb, ofstream & fbZMP, double in
 	}
 
 }
+
+
+void CnewPGstepStudy::produceSeqHalfSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable)
+{	
+
+	char alternate = leftOrRightFootStable;
+	int bigCount1=-1;
+	int bigCount2=-1;
+
+	fb.clear();
+	fbZMP.clear();
+
+	vector<double> tmpEleven;	
+	tmpEleven.resize(11);
+
+	vector<double> tmpPart1;
+	tmpPart1.resize(8);
+
+	vector<double> tmpPart2;
+	tmpPart2.resize(5);	
+	
+	tmpEleven[8] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
+	tmpEleven[9] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
+	tmpEleven[10] = -vectSteps_input[5];
+
+	for(unsigned int i = 1; i <= (vectSteps_input.size()-6)/5; i++) {		
+
+		tmpEleven[0] = (tmpEleven[8]/2)*cos(-tmpEleven[10]*PI/180) - (tmpEleven[9]/2)*sin(-tmpEleven[10]*PI/180);
+		tmpEleven[1] = (tmpEleven[8]/2)*sin(-tmpEleven[10]*PI/180) + (tmpEleven[9]/2)*cos(-tmpEleven[10]*PI/180);
+		tmpEleven[2] = 0;
+		tmpEleven[3] = -tmpEleven[0];
+		tmpEleven[4] = -tmpEleven[1];
+		tmpEleven[5] = -tmpEleven[10];
+
+		tmpEleven[6] = vectSteps_input[5*i+1];
+		tmpEleven[7] = vectSteps_input[5*i+2];
+
+		tmpEleven[8] = vectSteps_input[5*i+3];
+		tmpEleven[9] = vectSteps_input[5*i+4];
+		tmpEleven[10] = vectSteps_input[5*i+5];
+
+		vector<vector<double> > tmp_fb;
+		vector<vector<double> > tmp_fbZMP;	
+
+		tmpPart1[0] = tmpEleven[0];
+		tmpPart1[1] = tmpEleven[1];
+		tmpPart1[2] = tmpEleven[2];
+		tmpPart1[3] = tmpEleven[3];
+		tmpPart1[4] = tmpEleven[4];
+		tmpPart1[5] = tmpEleven[5];
+		tmpPart1[6] = tmpEleven[6];
+		tmpPart1[7] = tmpEleven[7];	
+
+		tmpPart2[0] = tmpEleven[6];
+		tmpPart2[1] = tmpEleven[7];
+		tmpPart2[2] = tmpEleven[8];
+		tmpPart2[3] = tmpEleven[9];
+		tmpPart2[4] = tmpEleven[10];	
+
+		produceOneUPHalfStep(tmp_fb, tmp_fbZMP, incrTime, zc, g, t1, t2, t3, tmpPart1, alternate);
+
+		int count = -1;
+		for(double u = 0.0 ; u < t3 ; u += incrTime)
+			{
+			count++;
+			bigCount1++;
+
+			fb.push_back(tmp_fb[count]);
+			fb[bigCount1][0] = bigCount1 * incrTime;
+	
+			fbZMP.push_back(tmp_fbZMP[count]);
+			fbZMP[bigCount1][0] = bigCount1 * incrTime;			
+
+			}	
+
+		produceOneDOWNHalfStep(tmp_fb, tmp_fbZMP, incrTime, zc, g, t1, t2, t3, tmpPart2, alternate);
+
+		count = -1;
+		for(double u = 0.0 ; u < t3 ; u += incrTime)
+			{
+			count++;
+			bigCount2++;
+
+			fb.push_back(tmp_fb[count]);
+			fb[bigCount2][0] = bigCount2 * incrTime;
+	
+			fbZMP.push_back(tmp_fbZMP[count]);
+			fbZMP[bigCount2][0] = bigCount2 * incrTime;			
+
+			}	
+
+		if(alternate == 'L') alternate = 'R'; else alternate = 'L';
+
+	}
+
+}
+
+void CnewPGstepStudy::produceSeqHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable)
+{
+	vector<vector<double> > fbVect;
+	vector<vector<double> > fbZMPVect;
+
+	produceSeqHalfSteps(fbVect, fbZMPVect, incrTime, zc, g, t1, t2, t3, vectSteps_input, leftOrRightFootStable);
+
+	for(unsigned int count = 0 ; count < fbVect.size() ; count++)
+	{
+		fb << fbVect[count][0] << " ";
+		for(int j = 0; j < 42; j++)
+		{			
+			fb << fbVect[count][j+1] << " " ;
+		}
+		fb << endl;
+
+		fbZMP << fbZMPVect[count][0] << " " << fbZMPVect[count][1] << " " <<
+			fbZMPVect[count][2] << " " << fbZMPVect[count][3] << endl;
+		
+	}
+
+}
+
 
 void CnewPGstepStudy::produceGlobalLinkedCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
 {

@@ -95,6 +95,7 @@ int main (int argc, char *argv[]) {
 
   ofstream ofst3 ("comzmp.dat");
 
+/*
   NPSS->produceSeqSteps(
 	ofst,
         ofst2, 
@@ -109,7 +110,20 @@ int main (int argc, char *argv[]) {
 	2.9,  //t5,
 	footfalls,
 	left_or_right);
+*/
 
+  NPSS->produceSeqHalfSteps(
+	ofst,
+        ofst2, 
+	0.005, 
+	body_height, 
+	9.81, 
+	1.2,  //t1,
+	1.22, //t2,
+	1.60, //t3,
+	footfalls,
+	left_or_right);
+/*
   NPSS->plotGlobalLinkedCOMZMP(
 	ofst3,
 	0.005,
@@ -122,6 +136,7 @@ int main (int argc, char *argv[]) {
 	2.9,
 	footfalls,
 	left_or_right);
+*/
 
   delete NPSS;
 
