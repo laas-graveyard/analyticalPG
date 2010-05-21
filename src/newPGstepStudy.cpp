@@ -2618,7 +2618,7 @@ void CnewPGstepStudy::produceSeqHalfSteps(vector<vector<double> > & fb, vector<v
 
 }
 
-void CnewPGstepStudy::produceSeqLinkedHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable, double negativeSlideTime)
+void CnewPGstepStudy::produceSeqHalfStepsWithStepFeatures(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable)
 {	
 
 	char alternate = leftOrRightFootStable;
@@ -2685,12 +2685,90 @@ void CnewPGstepStudy::produceSeqLinkedHalfSteps(ofstream & fb, ofstream & fbZMP,
 	}
 
 	for(unsigned int i = 1; i < vectSFeat.size(); i++) {
-		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],negativeSlideTime);
+		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],0);
 	}
 
 	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, vectSFeat[0]);
 
 }
+
+void CnewPGstepStudy::produceSeqSlidedHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable)
+{	
+
+	char alternate = leftOrRightFootStable;
+
+	vector<StepFeatures> vectSFeat;
+	vector<double> slideProfile;
+
+	vector<double> tmpEleven;	
+	tmpEleven.resize(11);
+
+	vector<double> tmpPart1;
+	tmpPart1.resize(8);
+
+	vector<double> tmpPart2;
+	tmpPart2.resize(5);	
+	
+	tmpEleven[8] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
+	tmpEleven[9] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
+	tmpEleven[10] = -vectSteps_input[5];
+
+	for(unsigned int i = 1; i <= (vectSteps_input.size()-6)/7; i++) {		
+
+		tmpEleven[0] = (tmpEleven[8]/2)*cos(-tmpEleven[10]*PI/180) - (tmpEleven[9]/2)*sin(-tmpEleven[10]*PI/180);
+		tmpEleven[1] = (tmpEleven[8]/2)*sin(-tmpEleven[10]*PI/180) + (tmpEleven[9]/2)*cos(-tmpEleven[10]*PI/180);
+		tmpEleven[2] = 0;
+		tmpEleven[3] = -tmpEleven[0];
+		tmpEleven[4] = -tmpEleven[1];
+		tmpEleven[5] = -tmpEleven[10];
+
+		slideProfile.push_back(vectSteps_input[7*i-1]);
+		tmpEleven[6] = vectSteps_input[7*i];
+		tmpEleven[7] = vectSteps_input[7*i+1];
+
+		slideProfile.push_back(vectSteps_input[7*i+2]);
+		tmpEleven[8] = vectSteps_input[7*i+3];
+		tmpEleven[9] = vectSteps_input[7*i+4];
+		tmpEleven[10] = vectSteps_input[7*i+5];
+
+		StepFeatures tmp_hstepUp;			
+		StepFeatures tmp_hstepDown;
+
+		tmpPart1[0] = tmpEleven[0];
+		tmpPart1[1] = tmpEleven[1];
+		tmpPart1[2] = tmpEleven[2];
+		tmpPart1[3] = tmpEleven[3];
+		tmpPart1[4] = tmpEleven[4];
+		tmpPart1[5] = tmpEleven[5];
+		tmpPart1[6] = tmpEleven[6];
+		tmpPart1[7] = tmpEleven[7];	
+
+		tmpPart2[0] = tmpEleven[6];
+		tmpPart2[1] = tmpEleven[7];
+		tmpPart2[2] = tmpEleven[8];
+		tmpPart2[3] = tmpEleven[9];
+		tmpPart2[4] = tmpEleven[10];	
+
+		produceOneUPHalfStepFeatures(tmp_hstepUp, incrTime, zc, g, t1, t2, t3, tmpPart1, alternate);
+
+		vectSFeat.push_back(tmp_hstepUp);	
+
+		produceOneDOWNHalfStepFeatures(tmp_hstepDown, incrTime, zc, g, t1, t2, t3, tmpPart2, alternate);
+
+		vectSFeat.push_back(tmp_hstepDown);
+
+		if(alternate == 'L') alternate = 'R'; else alternate = 'L';
+
+	}
+
+	for(unsigned int i = 1; i < vectSFeat.size(); i++) {
+		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],slideProfile[i]);
+	}
+
+	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, vectSFeat[0]);
+
+}
+
 
 void CnewPGstepStudy::produceSeqHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable)
 {

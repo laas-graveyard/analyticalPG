@@ -155,7 +155,7 @@ int main (int argc, char *argv[]) {
 
 */
 
-  NPSS->produceSeqLinkedHalfSteps(
+  NPSS->produceSeqSlidedHalfSteps(
 	ofst,
 	ofst2, 
 	0.005, 
@@ -165,8 +165,7 @@ int main (int argc, char *argv[]) {
 	0.81, 
 	1.60, 
 	footfalls, 
-	left_or_right,
-	-0.0);  
+	left_or_right);  
 
 
 /*
