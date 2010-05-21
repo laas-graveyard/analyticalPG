@@ -45,17 +45,18 @@ struct StepFeatures {
 	vector<double> zmpTrajX;
 	vector<double> comTrajY;
 	vector<double> zmpTrajY;
-	vector<double> footXtraj;
-	vector<double> footYtraj;
-	vector<double> footHeight;
-	vector<double> footOrient;
+	vector<double> leftfootXtraj;
+	vector<double> leftfootYtraj;
+	vector<double> leftfootHeight;
+	vector<double> leftfootOrient;
+	vector<double> rightfootXtraj;
+	vector<double> rightfootYtraj;
+	vector<double> rightfootHeight;
+	vector<double> rightfootOrient;
 	vector<double> waistOrient;	
-	char leftOrRightFootStable;
-	double t1;
-	double t2;
-	double t3;
-	double t4;
-	double t5;
+	double incrTime;
+	double zc;
+	unsigned int size;
 };
 
 class CnewPGstepStudy
@@ -242,22 +243,25 @@ class CnewPGstepStudy
 
 
 
-		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> footXtraj, vector<double> footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
+		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> & footXtraj, vector<double> & footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
 
+		void genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, StepFeatures & stepF); 
 
 		void produceOneStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
 
 		void produceOneStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
 
-		void produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
-
 		void produceOneUPHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
 
 		void produceOneUPHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
 
+		void produceOneUPHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
+
 		void produceOneDOWNHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
 
 		void produceOneDOWNHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
+
+		void produceOneDOWNHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
 
 
 		void produceSeqSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
@@ -275,8 +279,6 @@ class CnewPGstepStudy
 		void produceGlobalSeparateCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		void plotGlobalSeparateCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
-
-		void produceLinkedSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 	private:
 

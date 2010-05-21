@@ -110,7 +110,6 @@ int main (int argc, char *argv[]) {
 	2.9,  //t5,
 	footfalls,
 	left_or_right);
-*/
 
   NPSS->produceSeqHalfSteps(
 	ofst,
@@ -123,7 +122,7 @@ int main (int argc, char *argv[]) {
 	1.60, //t3,
 	footfalls,
 	left_or_right);
-/*
+
   NPSS->plotGlobalLinkedCOMZMP(
 	ofst3,
 	0.005,
@@ -137,6 +136,23 @@ int main (int argc, char *argv[]) {
 	footfalls,
 	left_or_right);
 */
+
+  StepFeatures stepF;
+  NPSS->produceOneUPHalfStepFeatures(
+	stepF, 
+	0.005, 
+	body_height, 
+	9.81, 
+	1.2, 
+	1.22, 
+	1.60, 
+	footfalls, 
+	left_or_right);
+
+  NPSS->genFullBodyTrajectoryFromStepFeatures(
+	ofst,
+	ofst2,
+	stepF);
 
   delete NPSS;
 
