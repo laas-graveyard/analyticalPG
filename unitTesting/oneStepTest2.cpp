@@ -135,7 +135,6 @@ int main (int argc, char *argv[]) {
 	2.9,
 	footfalls,
 	left_or_right);
-*/
 
   StepFeatures stepF;
   NPSS->produceOneUPHalfStepFeatures(
@@ -153,6 +152,65 @@ int main (int argc, char *argv[]) {
 	ofst,
 	ofst2,
 	stepF);
+
+*/
+
+  NPSS->produceSeqLinkedHalfSteps(
+	ofst,
+	ofst2, 
+	0.005, 
+	body_height, 
+	9.81, 
+	0.79, 
+	0.81, 
+	1.60, 
+	footfalls, 
+	left_or_right,
+	-0.0);  
+
+
+/*
+  vector<double> footfalls2;
+  footfalls2.resize(5);
+  for(unsigned int i = 0; i<5; i++) {
+    footfalls2[i] = footfalls[i+6];
+  }
+
+  StepFeatures stepF1;
+
+  StepFeatures stepF2;
+
+ NPSS->produceOneUPHalfStepFeatures(
+	stepF1, 
+	0.005, 
+	body_height, 
+	9.81, 
+	1.2, 
+	1.22, 
+	1.60, 
+	footfalls, 
+	left_or_right);
+
+ NPSS->produceOneDOWNHalfStepFeatures(
+	stepF2, 
+	0.005, 
+	body_height, 
+	9.81, 
+	1.2, 
+	1.22, 
+	1.60, 
+	footfalls2, 
+	left_or_right);
+
+ NPSS->addStepFeaturesWithSlide(stepF1, stepF2, 0); 
+
+ NPSS->genFullBodyTrajectoryFromStepFeatures(
+	ofst,
+	ofst2,
+	stepF1);
+
+*/
+
 
   delete NPSS;
 
