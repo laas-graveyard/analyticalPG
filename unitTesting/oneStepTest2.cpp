@@ -88,7 +88,7 @@ int main (int argc, char *argv[]) {
 			      //OpenHRP files in order to see the step
 			      //with OpenHRP
 
-  NPSS->runPGAndEvalTrajectory(); //execution (through the PG) and evaluation of the step
+  //NPSS->runPGAndEvalTrajectory(); //execution (through the PG) and evaluation of the step
 
   ofstream ofst ("oneStep.pos");
   ofstream ofst2 ("oneStep.zmp");
@@ -153,22 +153,6 @@ int main (int argc, char *argv[]) {
 	ofst2,
 	stepF);
 
-*/
-
-  NPSS->produceSeqSlidedHalfSteps(
-	ofst,
-	ofst2, 
-	0.005, 
-	body_height, 
-	9.81, 
-	0.79, 
-	0.81, 
-	1.60, 
-	footfalls, 
-	left_or_right);  
-
-
-/*
   vector<double> footfalls2;
   footfalls2.resize(5);
   for(unsigned int i = 0; i<5; i++) {
@@ -208,7 +192,46 @@ int main (int argc, char *argv[]) {
 	ofst2,
 	stepF1);
 
+
+
+
+  NPSS->produceSeqSlidedHalfSteps(
+	ofst,
+	ofst2, 
+	0.005, 
+	body_height, 
+	9.81, 
+	0.79, 
+	0.81, 
+	1.60, 
+	footfalls, 
+	left_or_right);  
+
+
 */
+
+  StepFeatures stepF1;
+
+  NPSS->produceOneUPHalfStepFeatures(
+	stepF1, 
+	0.005, 
+	body_height, 
+	9.81, 
+	0.79, 
+	0.81, 
+	1.60, 
+	footfalls, 
+	left_or_right);
+
+  cout << NPSS->genFullBodyTrajectoryFromStepFeatures(
+	ofst,
+	ofst2,
+	true,
+	NPSS->mp_HDR,
+	NPSS->mp_aHRCD,
+	NPSS->mp_vectOfBodies,
+	stepF1
+	) << endl;
 
 
   delete NPSS;

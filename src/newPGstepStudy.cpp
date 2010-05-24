@@ -1678,12 +1678,18 @@ void CnewPGstepStudy::genFullBodyConfig(
 
 }
 
-void CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
+double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 	ofstream & fb,
 	ofstream & fbZMP,
+	bool withSelfCollision,
+	Chrp2OptHumanoidDynamicRobot * HDR,
+	HumanoidRobotCollisionDetection * aHRCD,
+	vector<int> & vectOfBodies,
 	StepFeatures & stepF
 	) 
 {
+
+	double rmin = 999;
 
 	MAL_VECTOR(,double) jointsRadValues;
 
@@ -1847,6 +1853,70 @@ void CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 		jointsRadValues[40]=0.0;
 		jointsRadValues[41]=0.0;
 
+		
+		if(withSelfCollision){
+		//======================================================================================
+
+  		MAL_VECTOR_DIM(totall,double,48);	
+
+		MAL_VECTOR(,double) freefly;
+    		freefly.resize(6);
+    		for(int i=0;i<6;i++) {
+      		  freefly[i]=0;
+    		}
+    		concatvectors(freefly,jointsRadValues,totall);
+
+
+		Vect3 aP2;
+  		Mat3 aR2;
+  
+		VclipPose aX;
+		  
+  		// Take the posture from the multibody configuration.
+  		vector<CjrlJoint *> aVecOfJoints;
+  		CjrlJoint *aJoint; 
+  		aVecOfJoints = HDR->jointVector(); 
+  		for(unsigned int i=0; i < 28 ;i++) //vectOfBodies.size();i++)
+    		{
+
+      			matrix4d aCurrentM;
+      			aJoint = aVecOfJoints[i];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
+			      
+			aJoint->updateTransformation(jointsRadValues);
+      			aCurrentM = aJoint->currentTransformation();
+			      
+      			aP2[0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,3);
+      			aP2[1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,3);
+      			aP2[2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,3);
+	      
+			aR2[0][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,0); 
+      			aR2[0][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,1); 
+      			aR2[0][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,2);
+      			aR2[1][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,0); 
+      			aR2[1][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,1); 
+      			aR2[1][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,2);
+      			aR2[2][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,0);
+      			aR2[2][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,1);
+      			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,2);
+      
+	      		aX.set(aR2,aP2);
+      			aHRCD->SetBodyPose(i+1,aX);
+    		}
+  
+ 		double r;
+  
+  		// Update the body posture.
+  		aX = VclipPose::ID;
+  		aHRCD->SetBodyPose(0,aX);
+  
+		// Check the possible collision.
+  		r = aHRCD->ComputeSelfCollision();
+
+  		if (r<rmin) rmin=r;
+
+		//======================================================================================
+		}
+
 		fb << stepF.incrTime * count << " ";
 		for(int j = 0; j < 42; j++)
 		{
@@ -1864,7 +1934,13 @@ void CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 
 	}	
 
+	return rmin;
+
 }
+
+
+
+
 
 void CnewPGstepStudy::addStepFeaturesWithSlide(
 	StepFeatures & stepF1,
@@ -2274,6 +2350,7 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	stepF.size = waistOrient.size();
 
 }
+
 
 
 void CnewPGstepStudy::produceOneDOWNHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable)
@@ -2688,7 +2765,8 @@ void CnewPGstepStudy::produceSeqHalfStepsWithStepFeatures(ofstream & fb, ofstrea
 		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],0);
 	}
 
-	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, vectSFeat[0]);
+	vector<int> none;
+	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, false, NULL, NULL, none, vectSFeat[0]);
 
 }
 
@@ -2765,7 +2843,8 @@ void CnewPGstepStudy::produceSeqSlidedHalfSteps(ofstream & fb, ofstream & fbZMP,
 		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],slideProfile[i]);
 	}
 
-	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, vectSFeat[0]);
+	vector<int> none;
+	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, false, NULL, NULL, none, vectSFeat[0]);
 
 }
 

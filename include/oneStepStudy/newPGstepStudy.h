@@ -57,6 +57,7 @@ struct StepFeatures {
 	double incrTime;
 	double zc;
 	unsigned int size;
+	double distSelfCollision;
 };
 
 class CnewPGstepStudy
@@ -245,7 +246,7 @@ class CnewPGstepStudy
 
 		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> & footXtraj, vector<double> & footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
 
-		void genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, StepFeatures & stepF); 
+		double genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, bool withSelfCollision, Chrp2OptHumanoidDynamicRobot * HDR, HumanoidRobotCollisionDetection * aHRCD, vector<int> & vectOfBodies, StepFeatures & stepF); 
 
 		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
 
@@ -286,6 +287,10 @@ class CnewPGstepStudy
 
 		void plotGlobalSeparateCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
+		Chrp2OptHumanoidDynamicRobot * mp_HDR;
+		HumanoidRobotCollisionDetection * mp_aHRCD;
+		vector<int> mp_vectOfBodies;
+
 	private:
 
 		bool mp_generate;
@@ -295,7 +300,6 @@ class CnewPGstepStudy
 
 		vector<PaireOfBodies> mp_pairsOfBodiesToCheck;
 		set<int> mp_setOfBodies;
-		vector<int> mp_vectOfBodies;
 
 		MAL_VECTOR(,double) mp_stepsInput;
 		MAL_VECTOR(,double) mp_stepsVector;
@@ -307,9 +311,6 @@ class CnewPGstepStudy
 		string mp_SpecificitiesFileName;
 		string mp_LinkJointRank;
 		string mp_openHRPxml;
-
-		Chrp2OptHumanoidDynamicRobot * mp_HDR;
-		HumanoidRobotCollisionDetection * mp_aHRCD;
 
 		//coordinates of the initial positions of the ANKLES:
 		//first stable ankle:
