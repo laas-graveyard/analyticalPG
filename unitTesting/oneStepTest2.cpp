@@ -123,7 +123,8 @@ int main (int argc, char *argv[]) {
 	footfalls,
 	left_or_right);
 
-  NPSS->plotGlobalLinkedCOMZMP(
+
+  NPSS->plotGlobalSeparateCOMZMP(
 	ofst3,
 	0.005,
 	body_height,
@@ -135,6 +136,8 @@ int main (int argc, char *argv[]) {
 	2.9,
 	footfalls,
 	left_or_right);
+
+
 
   StepFeatures stepF;
   NPSS->produceOneUPHalfStepFeatures(
@@ -193,8 +196,6 @@ int main (int argc, char *argv[]) {
 	stepF1);
 
 
-
-
   NPSS->produceSeqSlidedHalfSteps(
 	ofst,
 	ofst2, 
@@ -206,7 +207,6 @@ int main (int argc, char *argv[]) {
 	1.60, 
 	footfalls, 
 	left_or_right);  
-
 
 */
 
@@ -233,7 +233,10 @@ int main (int argc, char *argv[]) {
 	stepF1
 	) << endl;
 
-
+  for(unsigned int u = 0; u < NPSS->mp_vectOfBodies.size(); u++ ) cout << NPSS->mp_vectOfBodies[u] << " " << endl;
+	
   delete NPSS;
+
+
 
 }

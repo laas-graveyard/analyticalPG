@@ -1880,11 +1880,11 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
     		{
 
       			matrix4d aCurrentM;
-      			aJoint = aVecOfJoints[i];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
+      			aJoint = aVecOfJoints[i+1];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
 			      
-			aJoint->updateTransformation(jointsRadValues);
+			aJoint->updateTransformation(totall);
       			aCurrentM = aJoint->currentTransformation();
-			      
+			cout << aJoint->rankInConfiguration() << " ";  
       			aP2[0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,3);
       			aP2[1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,3);
       			aP2[2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,3);
@@ -1910,7 +1910,7 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
   		aHRCD->SetBodyPose(0,aX);
   
 		// Check the possible collision.
-  		r = aHRCD->ComputeSelfCollision();
+  		r = aHRCD->ComputeSelfCollision(); cout << endl << r << endl;
 
   		if (r<rmin) rmin=r;
 
