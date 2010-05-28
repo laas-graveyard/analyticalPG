@@ -263,6 +263,7 @@ void CnewPGstepStudy::buildNecessaryInternalStructures()
 	for(unsigned int i=0;i<SetOfPairs.size();i++)
 	{
 		mp_aHRCD->InsertACollisionPair(SetOfPairs[i]);
+		cout << "pair " <<  SetOfPairs[i].body1 << " " << SetOfPairs[i].body2 << endl;
 	}
 
 }
@@ -1693,6 +1694,16 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 
 	MAL_VECTOR(,double) jointsRadValues;
 
+
+	vector<CjrlJoint *> aVecOfJoints;
+	if(withSelfCollision) {
+	aVecOfJoints = HDR->jointVector();
+	}
+
+	ofstream footpos;
+	footpos.open("FootPosition.dat", ofstream::out);
+	footpos.close();
+
 	for(unsigned int count = 0; count < stepF.size ; count++) {
 
 
@@ -1853,38 +1864,48 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 		jointsRadValues[40]=0.0;
 		jointsRadValues[41]=0.0;
 
+		MAL_VECTOR(,double) jointsRadValuesSmall = jointsRadValues;	
+		jointsRadValuesSmall.resize(30);
+		for(unsigned int u = 12; u < 30; u++) jointsRadValuesSmall[u]=0;
 		
+
 		if(withSelfCollision){
 		//======================================================================================
 
-  		MAL_VECTOR_DIM(totall,double,48);	
+  		MAL_VECTOR_DIM(totall,double,36);	
 
 		MAL_VECTOR(,double) freefly;
     		freefly.resize(6);
     		for(int i=0;i<6;i++) {
       		  freefly[i]=0;
     		}
-    		concatvectors(freefly,jointsRadValues,totall);
+    		concatvectors(freefly,jointsRadValuesSmall,totall);
 
 
 		Vect3 aP2;
   		Mat3 aR2;
   
-		VclipPose aX;
-		  
-  		// Take the posture from the multibody configuration.
-  		vector<CjrlJoint *> aVecOfJoints;
-  		CjrlJoint *aJoint; 
-  		aVecOfJoints = HDR->jointVector(); 
-  		for(unsigned int i=0; i < 28 ;i++) //vectOfBodies.size();i++)
-    		{
+		VclipPose aX;		    		
 
+  		CjrlJoint *aJoint; 
+
+		HDR->currentConfiguration(totall);
+		HDR->computeForwardKinematics();
+
+
+  		for(unsigned int i=0; i < 13 ;i++) //vectOfBodies.size();i++)
+    		{
+			
       			matrix4d aCurrentM;
-      			aJoint = aVecOfJoints[i+1];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
-			      
-			aJoint->updateTransformation(totall);
+      			aJoint = aVecOfJoints[i];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
+
+			//joint 0: BODY.  Then, 6 for the right leg, then 6 for the left leg.
+						
+			//aJoint->updateTransformation(totall);
+			
+
       			aCurrentM = aJoint->currentTransformation();
-			cout << aJoint->rankInConfiguration() << " ";  
+			
       			aP2[0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,3);
       			aP2[1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,3);
       			aP2[2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,3);
@@ -1898,19 +1919,32 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
       			aR2[2][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,0);
       			aR2[2][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,1);
       			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,2);
-      
+
 	      		aX.set(aR2,aP2);
-      			aHRCD->SetBodyPose(i+1,aX);
+			if (i==1)
+			{
+				footpos.open("FootPosition.dat", ofstream::app);
+			
+				footpos << aP2[0] << " " << aP2[1] << " " << aP2[2] <<endl;
+				footpos.close();
+			}			
+
+      			aHRCD->SetBodyPose(i,aX);
+
+			
+
+
+
     		}
   
  		double r;
   
-  		// Update the body posture.
+  		//Update the body posture.
   		aX = VclipPose::ID;
   		aHRCD->SetBodyPose(0,aX);
   
 		// Check the possible collision.
-  		r = aHRCD->ComputeSelfCollision(); cout << endl << r << endl;
+  		r = aHRCD->ComputeSelfCollision(); cout << r << "       ";
 
   		if (r<rmin) rmin=r;
 
