@@ -47,12 +47,13 @@ pkg_check_modules(MALJRL REQUIRED MatrixAbstractLayer>=1.4 )
 pkg_check_modules(HRP2DYN REQUIRED hrp2Dynamics>=1.4 )
 pkg_check_modules(WALKGEN REQUIRED walkGenJrl>=1.0 )
 pkg_check_modules(COLLISIONDETECT REQUIRED CollisionDetection>=1.0 )
+pkg_check_modules(SCDLIB REQUIRED SCD>=1.0 )
 
 # -----
 
 #SET(PROJECT_REQUIREMENTS "name_of_pkg_for_pkg-config >= version foreach pkg")
 SET(PROJECT_REQUIREMENTS "MatrixAbstractLayer >= 1.4 walkGenJrl >= 1.0
-CollisionDetection >= 1.0")
+CollisionDetection >= 1.0 SCD >= 1.0")
 
 # -----
 
@@ -60,6 +61,7 @@ CollisionDetection >= 1.0")
 MESSAGE(STATUS "${MALJRL_CFLAGS}")
 MESSAGE(STATUS "${WALKGEN_CFLAGS}")
 MESSAGE(STATUS "${COLLISIONDETECT_CFLAGS}")
+MESSAGE(STATUS "${SCDLIBS_CFLAGS}")
 
 # -----
 
@@ -80,6 +82,10 @@ FOREACH(option_cxxflags ${WALKGEN_CFLAGS})
 ENDFOREACH(option_cxxflags)
 
 FOREACH(option_cxxflags ${COLLISIONDETECT_CFLAGS})
+  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
+ENDFOREACH(option_cxxflags)
+
+FOREACH(option_cxxflags ${SCDLIB_CFLAGS})
   SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
 ENDFOREACH(option_cxxflags)
 
@@ -104,6 +110,10 @@ FOREACH(option_ldflags ${WALKGEN_LDFLAGS})
 ENDFOREACH(option_ldflags)
 
 FOREACH(option_ldflags ${COLLISIONDETECT_LDFLAGS})
+  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
+ENDFOREACH(option_ldflags)
+
+FOREACH(option_ldflags ${SCDLIB_LDFLAGS})
   SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
 ENDFOREACH(option_ldflags)
 

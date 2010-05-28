@@ -20,6 +20,9 @@
 
 #include "CollisionDetection/HumanoidRobotCollisionDetection.h"
 
+#include "SCD/S_Polyhedron/S_Polyhedron.h"
+#include "SCD/CD/CD_Pair.h"
+
 #include "newPGstepStudy.h"
 
 #include "InverseKinematics.h"
