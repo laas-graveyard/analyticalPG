@@ -13,7 +13,6 @@
 //#endif
 
 #include <jrlMathTools/jrlConstants.h>
-#include "CollisionDetection/HumanoidRobotCollisionDetection.h"
 #include <robotDynamics/jrlRobotDynamicsObjectConstructor.h>
 #include "filesManipulation.h"
 #include "oneStepStudy.h"
@@ -246,7 +245,7 @@ class CnewPGstepStudy
 
 		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> & footXtraj, vector<double> & footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
 
-		double genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, bool withSelfCollision, Chrp2OptHumanoidDynamicRobot * HDR, HumanoidRobotCollisionDetection * aHRCD, vector<int> & vectOfBodies, StepFeatures & stepF); 
+		double genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, bool withSelfCollision, Chrp2OptHumanoidDynamicRobot * HDR, vector<int> & vectOfBodies, StepFeatures & stepF); 
 
 		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
 
@@ -288,7 +287,6 @@ class CnewPGstepStudy
 		void plotGlobalSeparateCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		Chrp2OptHumanoidDynamicRobot * mp_HDR;
-		HumanoidRobotCollisionDetection * mp_aHRCD;
 		vector<int> mp_vectOfBodies;
 
 	private:

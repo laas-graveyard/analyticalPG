@@ -32,6 +32,7 @@
 //The functions replace_ have an ugly code, which is not efficient,
 // but does what it has to do. It is really a ad hoc collection of functions.
 
+using namespace std;
 
 double replace_or_get_value_scalar(
 				   const char *filename, 
