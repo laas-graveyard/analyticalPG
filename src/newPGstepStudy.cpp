@@ -1680,11 +1680,24 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 
 	SCD::STP_BV leftfootObj;
 	SCD::STP_BV rightfootObj;
+// 	SCD::S_Polyhedron leftfootObj;
+// 	SCD::S_Polyhedron rightfootObj;
 		
 	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/lleg3.txt");
 	int leftBodyNumber = 1+6 + 3; 
 	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/rleg3.txt");
 	int rightBodyNumber = 1 + 3;
+// 	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/lleg3.txt.otp");
+// 	int leftBodyNumber = 1+6 + 3; 
+// 	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/rleg3.txt.otp");
+// 	int rightBodyNumber = 1 + 3;
+
+	PaireOfBodies paireOfB;
+	paireOfB.body1 = 6 + 4;
+	paireOfB.body2 = 4;
+	HumanoidRobotCollisionDetection	* aHRCD = new HumanoidRobotCollisionDetection();
+	aHRCD->LoadStructureForTheHumanoid();
+	aHRCD->InsertACollisionPair(paireOfB);
 
 	SCD::CD_Pair Paire(&leftfootObj,&rightfootObj);
 	
@@ -1692,7 +1705,6 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 	double rmin = 999;
 
 	MAL_VECTOR(,double) jointsRadValues;
-
 
 	vector<CjrlJoint *> aVecOfJoints;
 	if(withSelfCollision) {
@@ -1891,35 +1903,55 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 		HDR->currentConfiguration(totall);
 		HDR->computeForwardKinematics();
 
+		VclipPose aX;
 
   		for(unsigned int i=0; i < 13 ;i++) //vectOfBodies.size();i++)
-    		{
-			
+    		{			
+
       			matrix4d aCurrentM;
+			matrix4d initialM;			
+
+			MAL_S3x3_MATRIX(aCurrentRot,double);
+			MAL_S3x3_MATRIX(aInitRotTranspose,double);
+			MAL_S3x3_MATRIX(aResultRot,double);
+
       			aJoint = aVecOfJoints[i];//mp_vectOfBodies[i]];//aDMB->GetJointFromVRMLID(i);
 
 			//joint 0: BODY.  Then, 6 for the right leg, then 6 for the left leg.
 						
 			//aJoint->updateTransformation(totall);
-			
-
+			initialM = aJoint->initialPosition();
       			aCurrentM = aJoint->currentTransformation();
+
+			//aCurrentM * transpose(initialM) ;
+			
+			for(unsigned int li=0;li<3;li++) {
+			  for(unsigned int lj=0;lj<3;lj++) {
+			     MAL_S3x3_MATRIX_ACCESS_I_J(aCurrentRot,li,lj) = 
+				MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,li,lj);
+			     MAL_S3x3_MATRIX_ACCESS_I_J(aInitRotTranspose,li,lj) = 
+				MAL_S4x4_MATRIX_ACCESS_I_J(initialM,lj,li); //transposed
+			  }
+			}					
+
+			aResultRot =  aCurrentRot * aInitRotTranspose;
 			
       			aP2[0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,3);
       			aP2[1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,3);
       			aP2[2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,3);
 	      
-			aR2[0][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,0); 
-      			aR2[0][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,1); 
-      			aR2[0][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,2);
-      			aR2[1][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,0); 
-      			aR2[1][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,1); 
-      			aR2[1][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,2);
-      			aR2[2][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,0);
-      			aR2[2][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,1);
-      			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,2);
+			aR2[0][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,0,0); 
+      			aR2[0][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,0,1); 
+      			aR2[0][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,0,2);
+      			aR2[1][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,1,0); 
+      			aR2[1][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,1,1); 
+      			aR2[1][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,1,2);
+      			aR2[2][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,0);
+      			aR2[2][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,1);
+      			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,2);
 
-	      		//aX.set(aR2,aP2);
+			aX.set(aR2,aP2);
+			aHRCD->SetBodyPose(i+1,aX);	      		
 
 			if(i==rightBodyNumber) {
 				SCD::Matrix3x3 M;
@@ -1967,18 +1999,25 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
   		
 		// Check the possible collision.
 
-		//SCD::Point3 pt1;
-		//SCD::Point3 pt2;
-
 		//cout << Paire[0]->getOrientation() << endl;
-		cout << Paire[0]->getPosition() << endl << endl;	
+		//cout << Paire[0]->getPosition() << endl;
 
 		//cout << Paire[1]->getOrientation() << endl;
-		cout << Paire[1]->getPosition() << endl;
+		//cout << Paire[1]->getPosition() << endl;
 	
-  		r = Paire.getDistance();
+		SCD::Point3 pt1;
+		SCD::Point3 pt2;  		
+
+		aX = VclipPose::ID;
+		aHRCD->SetBodyPose(0,aX);
+		// Check the possible collision.
+		//r = aHRCD->ComputeSelfCollision();
+		r = Paire.getClosestPoints(pt1, pt2);
+
+		cout << pt1 << endl;
+		cout << pt2 << endl;
 		int signum = (r > 0) - (r < 0);
-		r = signum*sqrt(abs(r));
+		r = signum*sqrt(abs(r));		
 		cout << "getDistance done " << r << "   /no.: " << count << endl;
 
   		if (r<rmin) rmin=r;
