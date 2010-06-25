@@ -1678,23 +1678,23 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 	) 
 {
 
-	SCD::STP_BV leftfootObj;
-	SCD::STP_BV rightfootObj;
-// 	SCD::S_Polyhedron leftfootObj;
-// 	SCD::S_Polyhedron rightfootObj;
+// 	SCD::STP_BV leftfootObj;
+// 	SCD::STP_BV rightfootObj;
+	SCD::S_Polyhedron leftfootObj;
+	SCD::S_Polyhedron rightfootObj;
 		
-	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/lleg3.txt");
-	int leftBodyNumber = 1+6 + 3; 
-	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/rleg3.txt");
+// 	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/lleg5.txt");
+// 	int leftBodyNumber = 1+6 + 5; 
+// 	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/rleg5.txt");
+// 	int rightBodyNumber = 1 + 5;
+	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/lleg3.txt.otp");
+	int leftBodyNumber = 1+6 + 3;
+	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/rleg3.txt.otp");
 	int rightBodyNumber = 1 + 3;
-// 	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/lleg3.txt.otp");
-// 	int leftBodyNumber = 1+6 + 3; 
-// 	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/rleg3.txt.otp");
-// 	int rightBodyNumber = 1 + 3;
 
 	PaireOfBodies paireOfB;
-	paireOfB.body1 = 6 + 4;
-	paireOfB.body2 = 4;
+	paireOfB.body1 = 6 + 5;
+	paireOfB.body2 = 5;
 	HumanoidRobotCollisionDetection	* aHRCD = new HumanoidRobotCollisionDetection();
 	aHRCD->LoadStructureForTheHumanoid();
 	aHRCD->InsertACollisionPair(paireOfB);
@@ -1930,12 +1930,13 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 			     MAL_S3x3_MATRIX_ACCESS_I_J(aCurrentRot,li,lj) = 
 				MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,li,lj);
 			     MAL_S3x3_MATRIX_ACCESS_I_J(aInitRotTranspose,li,lj) = 
-				MAL_S4x4_MATRIX_ACCESS_I_J(initialM,lj,li); //transposed
+				MAL_S4x4_MATRIX_ACCESS_I_J(initialM,li,lj); //transposed
 			  }
 			}					
 
 			aResultRot =  aCurrentRot * aInitRotTranspose;
-			
+			//MAL_S3x3_MATRIX_SET_IDENTITY(aResultRot);			
+
       			aP2[0] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,0,3);
       			aP2[1] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,1,3);
       			aP2[2] = MAL_S4x4_MATRIX_ACCESS_I_J(aCurrentM,2,3);
@@ -2000,10 +2001,10 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 		// Check the possible collision.
 
 		//cout << Paire[0]->getOrientation() << endl;
-		//cout << Paire[0]->getPosition() << endl;
+		cout << Paire[0]->getPosition() << endl;
 
 		//cout << Paire[1]->getOrientation() << endl;
-		//cout << Paire[1]->getPosition() << endl;
+		cout << Paire[1]->getPosition() << endl;
 	
 		SCD::Point3 pt1;
 		SCD::Point3 pt2;  		
