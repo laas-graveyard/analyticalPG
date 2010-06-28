@@ -5,7 +5,7 @@
 
 
 
-#include "oneStepStudy/newPGstepStudy.h"
+#include "analyticalPG/newPGstepStudy.h"
 
 #include <iostream>
 #include <iomanip>
@@ -197,6 +197,7 @@ int main (int argc, char *argv[]) {
 
 
 
+*/
 
   NPSS->produceSeqSlidedHalfSteps(
 	ofst,
@@ -210,8 +211,7 @@ int main (int argc, char *argv[]) {
 	footfalls, 
 	left_or_right);
 
-*/
-
+/*
 
   StepFeatures stepF1;
 
@@ -243,6 +243,8 @@ int main (int argc, char *argv[]) {
 	NPSS->mp_vectOfBodies,
 	stepF1
 	) << endl;
+
+*/
 
   delete NPSS;
 

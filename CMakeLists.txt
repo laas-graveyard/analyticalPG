@@ -27,7 +27,7 @@ IF(UNIX)
 ENDIF(UNIX)
 
 # name of the project
-SET(PROJECT_NAME oneStepStudy)
+SET(PROJECT_NAME analyticalPG)
 SET(PROJECT_CONTACT )
 SET(PROJECT_DESCRIPTION "")
 project(${PROJECT_NAME})
