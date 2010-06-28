@@ -197,6 +197,7 @@ int main (int argc, char *argv[]) {
 
 
 
+
   NPSS->produceSeqSlidedHalfSteps(
 	ofst,
 	ofst2, 
@@ -210,6 +211,7 @@ int main (int argc, char *argv[]) {
 	left_or_right);
 
 */
+
 
   StepFeatures stepF1;
 
@@ -233,14 +235,15 @@ int main (int argc, char *argv[]) {
 	stepF1
 	) << endl;
 
-/*
-
-  for(unsigned int u = 0; u < NPSS->mp_vectOfBodies.size(); u++ ) cout << NPSS->mp_vectOfBodies[u] << " " << endl;
-	
-*/
+  cout << NPSS->genFullBodyTrajectoryFromStepFeatures(
+	ofst,
+	ofst2,
+	false,
+	NPSS->mp_HDR,
+	NPSS->mp_vectOfBodies,
+	stepF1
+	) << endl;
 
   delete NPSS;
-
-
 
 }

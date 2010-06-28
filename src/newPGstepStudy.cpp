@@ -18,8 +18,6 @@
 
 #include <dynamicsJRLJapan/dynamicsJRLJapanFactory.h>
 
-#include "CollisionDetection/HumanoidRobotCollisionDetection.h"
-
 #include "SCD/S_Polyhedron/S_Polyhedron.h"
 #include "SCD/STP-BV/STP_BV.h"
 #include "SCD/CD/CD_Pair.h"
@@ -1671,7 +1669,7 @@ void CnewPGstepStudy::genFullBodyConfig(
 double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 	ofstream & fb,
 	ofstream & fbZMP,
-	bool withSelfCollision,
+	bool withSelfCollision, //with the self collision check ON, nothing is sent to the ofstreams
 	Chrp2OptHumanoidDynamicRobot * HDR,
 	vector<int> & vectOfBodies,
 	StepFeatures & stepF
@@ -1680,27 +1678,39 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 
 // 	SCD::STP_BV leftfootObj;
 // 	SCD::STP_BV rightfootObj;
-	SCD::S_Polyhedron leftfootObj;
-	SCD::S_Polyhedron rightfootObj;
-		
 // 	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/lleg5.txt");
 // 	int leftBodyNumber = 1+6 + 5; 
 // 	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/STPBV/rleg5.txt");
 // 	int rightBodyNumber = 1 + 5;
-	leftfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/lleg3.txt.otp");
-	int leftBodyNumber = 1+6 + 3;
-	rightfootObj.constructFromFile("/home/perrin/Desktop/nuage_points/Polyedres/rleg3.txt.otp");
-	int rightBodyNumber = 1 + 3;
 
-	PaireOfBodies paireOfB;
-	paireOfB.body1 = 6 + 5;
-	paireOfB.body2 = 5;
-	HumanoidRobotCollisionDetection	* aHRCD = new HumanoidRobotCollisionDetection();
-	aHRCD->LoadStructureForTheHumanoid();
-	aHRCD->InsertACollisionPair(paireOfB);
+	vector<SCD::S_Polyhedron> leftObjects;
+	vector<SCD::S_Polyhedron> rightObjects;	
 
-	SCD::CD_Pair Paire(&leftfootObj,&rightfootObj);
-	
+	for(unsigned int i = 0; i < 4; i++) {
+		
+		ostringstream ostrstrLeft (ostringstream::out);	
+		ostringstream ostrstrRight (ostringstream::out);		
+		ostrstrLeft << "/home/perrin/Desktop/nuage_points/Polyedres/lleg" << i+2 << ".txt.otp";	
+		ostrstrRight << "/home/perrin/Desktop/nuage_points/Polyedres/rleg" << i+2 << ".txt.otp";		
+
+		SCD::S_Polyhedron leftObj;
+		leftObj.constructFromFile(ostrstrLeft.str());		
+		leftObjects.push_back(leftObj);
+
+		SCD::S_Polyhedron rightObj;	
+		rightObj.constructFromFile(ostrstrRight.str());	
+		rightObjects.push_back(rightObj);		
+		
+	}
+
+	vector<SCD::CD_Pair> PairesVect;	
+
+	for(unsigned int i = 0; i < 4; i++) {
+		for(unsigned int j = 0; j < 4; j++) {
+			SCD::CD_Pair Paire(&leftObjects[i],&rightObjects[j]);
+			PairesVect.push_back(Paire);
+		}
+	}
 
 	double rmin = 999;
 
@@ -1710,10 +1720,6 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 	if(withSelfCollision) {
 	aVecOfJoints = HDR->jointVector();
 	}
-
-	ofstream footpos;
-	footpos.open("FootPosition.dat", ofstream::out);
-	footpos.close();
 
 	for(unsigned int count = 0; count < stepF.size ; count++) {
 
@@ -1892,18 +1898,14 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
     		}
     		concatvectors(freefly,jointsRadValuesSmall,totall);
 
-
 		Vect3 aP2;
   		Mat3 aR2;
-  
 		//VclipPose aX;		    		
 
-  		CjrlJoint *aJoint; 
+  		CjrlJoint *aJoint;
 
 		HDR->currentConfiguration(totall);
 		HDR->computeForwardKinematics();
-
-		VclipPose aX;
 
   		for(unsigned int i=0; i < 13 ;i++) //vectOfBodies.size();i++)
     		{			
@@ -1949,82 +1951,63 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
       			aR2[1][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,1,2);
       			aR2[2][0] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,0);
       			aR2[2][1] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,1);
-      			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,2);
-
-			aX.set(aR2,aP2);
-			aHRCD->SetBodyPose(i+1,aX);	      		
-
-			if(i==rightBodyNumber) {
+      			aR2[2][2] = MAL_S4x4_MATRIX_ACCESS_I_J(aResultRot,2,2);	      					
+			
+			if(i > 2 && i < 7) {
 				SCD::Matrix3x3 M;
 				for(unsigned int u1=0; u1 < 3; u1++) {
 				for(unsigned int u2=0; u2 < 3; u2++) {
 					M(u1,u2) = aR2[u1][u2];					
 				}
-				}
-				//M.setIdentity();
-				rightfootObj.setPosition(aP2[0], aP2[1], aP2[2]);
-				//rightfootObj.setPosition(0, 0, 0);
-				rightfootObj.setOrientation(M);
+				}	
+				rightObjects[i-3].setPosition(aP2[0], aP2[1], aP2[2]);
+				rightObjects[i-3].setOrientation(M);
 			}
-			if(i==leftBodyNumber) {
+			if(i > 8 && i < 13) {
 				SCD::Matrix3x3 M;
 				for(unsigned int u1=0; u1 < 3; u1++) {
 				for(unsigned int u2=0; u2 < 3; u2++) {
 					M(u1,u2) = aR2[u1][u2];
 				}
 				}
-				//M.setIdentity();
-				leftfootObj.setPosition(aP2[0], aP2[1], aP2[2]);
-				//leftfootObj.setPosition(0, 0, 0);
-				leftfootObj.setOrientation(M);
-			}
-
-			if (i==1)
-			{
-				footpos.open("FootPosition.dat", ofstream::app);
-			
-				footpos << aP2[0] << " " << aP2[1] << " " << aP2[2] <<endl;
-				footpos.close();
-			}			
-
-      			//aHRCD->SetBodyPose(i,aX);
-
+				leftObjects[i-9].setPosition(aP2[0], aP2[1], aP2[2]);
+				leftObjects[i-9].setOrientation(M);
+			}		
 
     		}
   
  		double r;
-  
-  		//Update the body posture.
-  		//aX = VclipPose::ID;
-  		//aHRCD->SetBodyPose(0,aX);
-  		
+   		
 		// Check the possible collision.
 
 		//cout << Paire[0]->getOrientation() << endl;
-		cout << Paire[0]->getPosition() << endl;
-
+		//cout << Paire[0]->getPosition() << endl;
 		//cout << Paire[1]->getOrientation() << endl;
-		cout << Paire[1]->getPosition() << endl;
-	
-		SCD::Point3 pt1;
-		SCD::Point3 pt2;  		
+		//cout << Paire[1]->getPosition() << endl;	
+		//SCD::Point3 pt1;
+		//SCD::Point3 pt2;  		
 
-		aX = VclipPose::ID;
-		aHRCD->SetBodyPose(0,aX);
 		// Check the possible collision.
-		//r = aHRCD->ComputeSelfCollision();
-		r = Paire.getClosestPoints(pt1, pt2);
+		//r = Paire.getClosestPoints(pt1, pt2);
 
-		cout << pt1 << endl;
-		cout << pt2 << endl;
-		int signum = (r > 0) - (r < 0);
-		r = signum*sqrt(abs(r));		
-		cout << "getDistance done " << r << "   /no.: " << count << endl;
 
-  		if (r<rmin) rmin=r;
+		//cout << pt1 << endl;
+		//cout << pt2 << endl;
+		
+		//cout << "getDistance done " << r << "   /no.: " << count << endl;
+
+		for(unsigned int i = 0; i < 4; i++) {
+			for(unsigned int j = 0; j < 4; j++) {
+				r = PairesVect[4*i+j].getDistance();
+				int signum = (r > 0) - (r < 0);
+				r = signum*sqrt(abs(r));
+  				if (r<rmin) rmin=r;
+			}
+		}
+
 
 		//======================================================================================
-		}
+		} else {
 
 		fb << stepF.incrTime * count << " ";
 		for(int j = 0; j < 42; j++)
@@ -2040,6 +2023,7 @@ double CnewPGstepStudy::genFullBodyTrajectoryFromStepFeatures(
 			+(stepF.zmpTrajY[count]-stepF.comTrajY[count])*cos(-stepF.waistOrient[count]*PI/180) << " ";
 		fbZMP << -stepF.zc-0.105 << " ";
 		fbZMP << endl;
+		}
 
 	}	
 
@@ -2871,7 +2855,7 @@ void CnewPGstepStudy::produceSeqHalfStepsWithStepFeatures(ofstream & fb, ofstrea
 	}
 
 	for(unsigned int i = 1; i < vectSFeat.size(); i++) {
-		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],0);
+		addStepFeaturesWithSlide(vectSFeat[0],vectSFeat[i],0); //no slide
 	}
 
 	vector<int> none;
@@ -2953,7 +2937,7 @@ void CnewPGstepStudy::produceSeqSlidedHalfSteps(ofstream & fb, ofstream & fbZMP,
 	}
 
 	vector<int> none;
-	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, false, NULL, none, vectSFeat[0]);
+	genFullBodyTrajectoryFromStepFeatures(fb, fbZMP, false, NULL, none, vectSFeat[0]);	
 
 }
 
