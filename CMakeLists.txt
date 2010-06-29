@@ -1,4 +1,4 @@
-# Olivier Stasse, Francois Keith, JRL, CNRS/AIST
+# Olivier Stasse, Francois Keith, Nicolas Perrin JRL, CNRS/AIST
 # Creation: 31/10/2008
 # History:
 #
@@ -42,24 +42,19 @@ OPTION(BUILD_SHARED_LIBS "Build it with shared libraries." ON)
 # -------------------------
 INCLUDE(FindPkgConfig)
 
-#pkg_check_modules(name_of_pkg REQUIRED name_of_pkg_for_pkg-config>=version )
 pkg_check_modules(MALJRL REQUIRED MatrixAbstractLayer>=1.4 )
-pkg_check_modules(HRP2DYN REQUIRED hrp2Dynamics>=1.4 )
-pkg_check_modules(WALKGEN REQUIRED walkGenJrl>=1.0 )
+pkg_check_modules(HRP2DYN REQUIRED hrp2Dynamics>=1.1 )
 pkg_check_modules(COLLISIONDETECT REQUIRED CollisionDetection>=1.0 )
 pkg_check_modules(SCDLIB REQUIRED SCD>=1.0 )
 
 # -----
 
 #SET(PROJECT_REQUIREMENTS "name_of_pkg_for_pkg-config >= version foreach pkg")
-SET(PROJECT_REQUIREMENTS "MatrixAbstractLayer >= 1.4 walkGenJrl >= 1.0
-CollisionDetection >= 1.0 SCD >= 1.0")
+SET(PROJECT_REQUIREMENTS "MatrixAbstractLayer >= 1.4 hrp2Dynamics >= 1.1 walkGenJrl >= 1.0 SCD >= 1.0")
 
 # -----
 
-#MESSAGE(STATUS "${name_of_pkg_CFLAGS}")
 MESSAGE(STATUS "${MALJRL_CFLAGS}")
-MESSAGE(STATUS "${WALKGEN_CFLAGS}")
 MESSAGE(STATUS "${COLLISIONDETECT_CFLAGS}")
 MESSAGE(STATUS "${SCDLIBS_CFLAGS}")
 
@@ -69,19 +64,7 @@ SET(${PROJECT_NAME}_CXXFLAGS "-Wall ${${PROJECT_NAME}_CXXFLAGS}")
 
 # -----
 
-#FOREACH(option_cxxflags ${name_of_pkg_CFLAGS})
-#  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-#ENDFOREACH(option_cxxflags)
-
 FOREACH(option_cxxflags ${MALJRL_CFLAGS})
-  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-ENDFOREACH(option_cxxflags)
-
-FOREACH(option_cxxflags ${WALKGEN_CFLAGS})
-  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-ENDFOREACH(option_cxxflags)
-
-FOREACH(option_cxxflags ${COLLISIONDETECT_CFLAGS})
   SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
 ENDFOREACH(option_cxxflags)
 
@@ -93,23 +76,11 @@ FOREACH(option_cxxflags ${HRP2DYN_CFLAGS})
   SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
 ENDFOREACH(option_cxxflags)
 
-#FOREACH(option_ldflags ${name_of_pkg_LDFLAGS})
-#  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-#ENDFOREACH(option_ldflags)
-
 FOREACH(option_ldflags ${MALJRL_LDFLAGS})
   SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
 ENDFOREACH(option_ldflags)
 
 FOREACH(option_ldflags ${HRP2DYN_LDFLAGS})
-  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-ENDFOREACH(option_ldflags)
-
-FOREACH(option_ldflags ${WALKGEN_LDFLAGS})
-  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-ENDFOREACH(option_ldflags)
-
-FOREACH(option_ldflags ${COLLISIONDETECT_LDFLAGS})
   SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
 ENDFOREACH(option_ldflags)
 
@@ -152,8 +123,7 @@ CONFIGURE_FILE(${${PROJECT_NAME}_SOURCE_DIR}/${PROJECT_NAME}.pc.cmake
 
 INSTALL(FILES ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}.pc
 	DESTINATION ${install_libdir_pkgconfig}	
-        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
-)
+        PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE )
 
 
 

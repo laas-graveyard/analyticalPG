@@ -34,21 +34,4 @@ SET_TARGET_PROPERTIES( npss
 
 )
 
-ADD_EXECUTABLE( testscd testSCD.cpp)
-SET_TARGET_PROPERTIES( testscd
-	              PROPERTIES
-	              COMPILE_FLAGS ${${PROJECT_NAME}_test_CXXFLAGS}
-          	      LINK_FLAGS "-lqhull -lgfortran ${${PROJECT_NAME}_test_LDFLAGS} -Wl,-R${PROJECT_SOURCE_DIR}/build/src ${PROJECT_SOURCE_DIR}/build/src/lib${PROJECT_NAME}.so"
-
-)
-
-ADD_EXECUTABLE( oss oneStepTest.cpp)
-SET_TARGET_PROPERTIES( oss
-	              PROPERTIES
-	              COMPILE_FLAGS ${${PROJECT_NAME}_test_CXXFLAGS}
-          	      LINK_FLAGS "-lqhull -lgfortran ${${PROJECT_NAME}_test_LDFLAGS} -Wl,-R${PROJECT_SOURCE_DIR}/build/src ${PROJECT_SOURCE_DIR}/build/src/lib${PROJECT_NAME}.so"
-
-)
-#ADD_DEPENDENCIES (oss ${PROJECT_NAME})
 ADD_DEPENDENCIES (npss ${PROJECT_NAME})
-ADD_DEPENDENCIES (oss ${PROJECT_NAME})

@@ -49,16 +49,6 @@ int main (int argc, char *argv[]) {
 
   int i0=0;
   int i1=0;
-  (NPSS->m_modeAndProperties.pairsOfBodiesToCheck).clear();
-  while (1) {
-    PaireOfBodies paire0;
-    is >> i0;    
-    if (i0 == -999) break;
-    is >> i1;
-    paire0.body1 = i0;
-    paire0.body2 = i1;         
-    (NPSS->m_modeAndProperties.pairsOfBodiesToCheck).push_back(paire0);
-  }   
 
 
   NPSS->m_modeAndProperties.coordsConversion = CartesianINPUT;  
@@ -197,8 +187,6 @@ int main (int argc, char *argv[]) {
 
 
 
-*/
-
   NPSS->produceSeqSlidedHalfSteps(
 	ofst,
 	ofst2, 
@@ -208,6 +196,25 @@ int main (int argc, char *argv[]) {
 	0.49, 
 	0.51, 
 	1.00, 
+	footfalls, 
+	left_or_right);
+
+*/
+
+  StepFeatures stepF1;
+
+  NPSS->produceSeqStepsWithStepFeatures(
+	ofst,	
+	ofst2, 
+	0.005, 
+	body_height, 
+	9.81, 
+	0.15, //stepHeight
+	0.49, 
+	0.51,
+	1.05,
+	1.07, 
+	1.60, 
 	footfalls, 
 	left_or_right);
 

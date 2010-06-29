@@ -1,6 +1,8 @@
 /*
  *  Copyright AIST-CNRS Joint Robotics Laboratory
  *  Author: Nicolas Perrin
+ *
+ *  Convention: m_ for public members, mp_ for private members.
  */
 
 #ifndef newPGstepStudy_H
@@ -15,7 +17,7 @@
 #include <jrlMathTools/jrlConstants.h>
 #include <robotDynamics/jrlRobotDynamicsObjectConstructor.h>
 #include "filesManipulation.h"
-#include "oneStepStudy.h"
+//#include "oneStepStudy.h"
 
 #include <sys/time.h>
 #include <stdlib.h>
@@ -32,12 +34,63 @@
 using namespace std;
 
 /*!
- * Main class of the package.
- * It is called ConeStepStudy because it was initially intended to
- * study isolated single steps, but now it can actually study isolated
- * sequences of steps.
- * Uses the convention: m_ for public members, mp_ for private members.
+ * Small function to concatenate MAL vectors.
+ * @param v1 reference to the first MAL vector.
+ * @param v2 reference to the second MAL vector.
+ * @param v3 reference to the MAL vector which will contain v1.v2
+ * after the call to concatvectors(v1,v2,v3).
+ * WARNING: v3 must already have the adequate size.
+*/
+void concatvectors(MAL_VECTOR(,double) & v1, MAL_VECTOR(,double) & v2, MAL_VECTOR(,double) & v3);
+
+/*!
+ * Enumeration type to pick between two possible choices (to use later
+ * with the function setSteps()): cartesian
+ * inputs or polar inputs.
+*/
+enum COORDINATES_CONVERSION { PolarINPUT, CartesianINPUT };
+
+/*!
+ * Structure containing all the parameters set by the user.
  */
+struct ModeAndPropertiesToSet 
+{
+  /*!
+   * If generate==1, then initAndGenOpenHRPFiles() will actually
+   * modify the files used by OpenHRP.
+   * If generate==0, then initAndGenOpenHRPFiles() will not access 
+   * (no read, no write) to any file on the disk.
+   */
+  bool generate;
+
+  /*!
+   * The height of the Waist (in meters), which will keep the same
+   * value during the steps.
+   */
+  double bodyHeight;
+
+  /*!
+   * Defines which foot will be stable during the first step. 
+   * 'L': left foot. 'R': right foot.
+   */
+  char leftOrRightFirstStable; 
+
+  /*!
+   * Defines which type of coordinates are to be used with method setSteps()
+   */
+  COORDINATES_CONVERSION coordsConversion;
+};
+
+/*!
+ * Enumeration type.
+ * The user can change the properties through the public member
+ * m_modeAndProperties. Then he can activate the changes (the
+ * properties are moved to private members). Changes can all be
+ * activated simultaneously, but the user can also choose which
+ * specific change he wants to activate. To do that he can use
+ * activateModeAndPropertiesChanges(prpty), prpty being of type ModeAndPropertiesEnum
+ */
+enum ModeAndPropertiesEnum { Generate, BodyHeight, LeftOrRightFirstStable, CoordsConversion };
 
 struct StepFeatures {
 	vector<double> comTrajX;
@@ -243,40 +296,51 @@ class CnewPGstepStudy
 
 
 
-		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> & footXtraj, vector<double> & footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
+// 		void genFullBodyConfig(int count, MAL_VECTOR(,double) & jointsRadValues, vector<double> & comTrajX, vector<double> & comTrajY, vector<double> & waistOrient, vector<double> & footXtraj, vector<double> & footYtraj, vector<double> & footOrient, vector<double> & footHeight, double positionXstableFoot, double positionYstableFoot, char leftOrRightFootStable, double zc); 
 
 		double genFullBodyTrajectoryFromStepFeatures(ofstream & fb, ofstream & fbZMP, bool withSelfCollision, Chrp2OptHumanoidDynamicRobot * HDR, vector<int> & vectOfBodies, StepFeatures & stepF); 
 
 		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
 
-		void produceOneStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
+// 		void produceOneStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
 
-		void produceOneStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
+// 		void produceOneStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);
 
-		void produceOneUPHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
+		void produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);		
 
-		void produceOneUPHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
+// 		void produceOneUPHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
+
+// 		void produceOneUPHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectUPHalfStep_input, char leftOrRightFootStable);
 
 		void produceOneUPHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
 
-		void produceOneDOWNHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
+// 		void produceOneDOWNHalfStep(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
 
-		void produceOneDOWNHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
+// 		void produceOneDOWNHalfStep(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectDOWNHalfStep_input, char leftOrRightFootStable);
 
 		void produceOneDOWNHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
 
 
-		void produceSeqSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
+// 		void produceSeqSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
-		void produceSeqSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
+// 		void produceSeqSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
-		void produceSeqHalfSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+		void produceSeqStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
-		void produceSeqHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+		void produceSeqStepsWithStepFeatures(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
+
+// 		void produceSeqHalfSteps(vector<vector<double> > & fb, vector<vector<double> > & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+
+// 		void produceSeqHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+
+
+		void produceSeqHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		void produceSeqHalfStepsWithStepFeatures(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
 
-		void produceSeqSlidedHalfSteps(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+		void produceSeqSlidedHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
+
+		void produceSeqSlidedHalfStepsWithStepFeatures(ofstream & fb, ofstream & fbZMP, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		void produceGlobalLinkedCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
@@ -295,9 +359,6 @@ class CnewPGstepStudy
 		double mp_bodyHeight;
 		char mp_leftOrRightFirstStable;
 		COORDINATES_CONVERSION mp_coordsConversion;
-
-		vector<PaireOfBodies> mp_pairsOfBodiesToCheck;
-		set<int> mp_setOfBodies;
 
 		MAL_VECTOR(,double) mp_stepsInput;
 		MAL_VECTOR(,double) mp_stepsVector;

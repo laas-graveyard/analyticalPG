@@ -14,8 +14,7 @@
 # ---------------------------
 SET(libdyn_src
 # ex : toto.cpp 
-# ...  
-  oneStepStudy.cpp
+# ...    
   newPGstepStudy.cpp	
   filesManipulation.cpp
  )
@@ -25,8 +24,7 @@ SET(libdyn_src
 #-----------------------------
 SET(libdyn_headers 
 # ex : ../include/${PROJECT_NAME}/toto.h
-# ...
-  ../include/${PROJECT_NAME}/oneStepStudy.h
+# ...  
   ../include/${PROJECT_NAME}/newPGstepStudy.h
   ../include/${PROJECT_NAME}/filesManipulation.h
 )
