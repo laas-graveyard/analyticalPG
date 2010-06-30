@@ -38,66 +38,15 @@ project(${PROJECT_NAME})
 #------------------------
 OPTION(BUILD_SHARED_LIBS "Build it with shared libraries." ON)
 
-# Check for required packages
-# -------------------------
-INCLUDE(FindPkgConfig)
-
-pkg_check_modules(MALJRL REQUIRED MatrixAbstractLayer>=1.4 )
-pkg_check_modules(HRP2DYN REQUIRED hrp2Dynamics>=1.1 )
-pkg_check_modules(COLLISIONDETECT REQUIRED CollisionDetection>=1.0 )
-pkg_check_modules(SCDLIB REQUIRED SCD>=1.0 )
-
-# -----
-
-#SET(PROJECT_REQUIREMENTS "name_of_pkg_for_pkg-config >= version foreach pkg")
-SET(PROJECT_REQUIREMENTS "MatrixAbstractLayer >= 1.4 hrp2Dynamics >= 1.1 walkGenJrl >= 1.0 SCD >= 1.0")
-
-# -----
-
-MESSAGE(STATUS "${MALJRL_CFLAGS}")
-MESSAGE(STATUS "${COLLISIONDETECT_CFLAGS}")
-MESSAGE(STATUS "${SCDLIBS_CFLAGS}")
-
-# -----
-
 SET(${PROJECT_NAME}_CXXFLAGS "-Wall ${${PROJECT_NAME}_CXXFLAGS}")
 
-# -----
-
-FOREACH(option_cxxflags ${MALJRL_CFLAGS})
-  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-ENDFOREACH(option_cxxflags)
-
-FOREACH(option_cxxflags ${SCDLIB_CFLAGS})
-  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-ENDFOREACH(option_cxxflags)
-
-FOREACH(option_cxxflags ${HRP2DYN_CFLAGS})
-  SET(${PROJECT_NAME}_CXXFLAGS "${option_cxxflags} ${${PROJECT_NAME}_CXXFLAGS}")
-ENDFOREACH(option_cxxflags)
-
-FOREACH(option_ldflags ${MALJRL_LDFLAGS})
-  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-ENDFOREACH(option_ldflags)
-
-FOREACH(option_ldflags ${HRP2DYN_LDFLAGS})
-  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-ENDFOREACH(option_ldflags)
-
-FOREACH(option_ldflags ${SCDLIB_LDFLAGS})
-  SET(${PROJECT_NAME}_LDFLAGS "${option_ldflags} ${${PROJECT_NAME}_LDFLAGS}")
-ENDFOREACH(option_ldflags)
-
-# -----
-
-SET(${PROJECT_NAME}_src_LDFLAGS ${${PROJECT_NAME}_LDFLAGS})
+SET(${PROJECT_NAME}_src_LDFLAGS "${LIBDIR_KW}${CMAKE_PREFIX_INSTALL}/lib")
 SET(${PROJECT_NAME}_LDFLAGS "${LIBDIR_KW}${CMAKE_PREFIX_INSTALL}/lib ${LIBINCLUSION_KW}${PROJECT_NAME}-${PROJECT_VERSION}${LIBINCLUSION_EXT} ${${PROJECT_NAME}_LDFLAGS}")
 
 # -------------------------
 
 add_subdirectory(src)
 add_subdirectory(unitTesting)
-
 
 # Prepare the documentation
 # -------------------------

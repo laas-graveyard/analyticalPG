@@ -16,7 +16,6 @@ SET(libdyn_src
 # ex : toto.cpp 
 # ...    
   newPGstepStudy.cpp	
-  filesManipulation.cpp
  )
 
 
@@ -26,7 +25,6 @@ SET(libdyn_headers
 # ex : ../include/${PROJECT_NAME}/toto.h
 # ...  
   ../include/${PROJECT_NAME}/newPGstepStudy.h
-  ../include/${PROJECT_NAME}/filesManipulation.h
 )
 
 FOREACH(srcfile ${libdyn_src})
@@ -43,7 +41,7 @@ SET(PROJECT_NAME_LIB ${PROJECT_NAME})
 # Add main target: 
 # ---------------------------------
 ADD_LIBRARY(${PROJECT_NAME_LIB}
-  ${libdyn_src}   InverseKinematics.cpp
+  ${libdyn_src}
  ${libdyn_headers}
 )
 
