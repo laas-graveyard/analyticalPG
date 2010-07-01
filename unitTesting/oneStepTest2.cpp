@@ -44,7 +44,7 @@ int main (int argc, char *argv[]) {
 
   ofstream ofst ("gnuSteps.dat");
 
-  NPSS->drawSteps(ofst, footfalls, left_or_right, false, false);
+  NPSS->drawSeqStepFeatures(ofst, 0.005, body_height, 9.81, 0.15, 1.3, 1.32, 1.68, 1.70, 2.9, footfalls, left_or_right, 0.5, -0.5, 1.5, -1.5, 0.5);
 
   delete NPSS;
 

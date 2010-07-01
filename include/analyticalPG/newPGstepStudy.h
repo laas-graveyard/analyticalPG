@@ -57,8 +57,20 @@ class CnewPGstepStudy
 		 */
 		~CnewPGstepStudy();	
 
-		/*! drawSteps outputs a file intended for gnuplot. Use 'plot index 0 with
-		 * "lines", index 1 with "labels"', and preferably set no autoscale.
+		/*! drawSteps outputs a file intended for gnuplot.
+		 * Let's say that the result of drawSteps is in the 
+		 * file "data.gnuplot".
+		 * Please write the following script file "toto.txt":
+		 * set size ratio 1
+		 * unset key
+		 * set term postscript eps enhanced
+		 * set output "totoOutput.eps"
+		 * plot "data.gnuplot" index 0 w l lt 1 lw 0.5 lc 1, 
+		 * "data.gnuplot" index 1 w l lt 2 lw 0.5 lc 2, "data.gnuplot"
+		 *  index 2 w l lt 2 lw 0.5 lc 2, "data.gnuplot" index 3 w l
+		 * lt 1 lw 0.5 lc 3, "totoOutput.dat" index 4 w l lt 1 lw 0.5 lc 4		
+		 * Then, gnuplot> load 'toto.txt' will produce the eps file
+		 * "totoOutput.eps".
 		 * @param fb The ofstream corresponding to the file where the data
 		 *           will be written.
 		 * @param vect_input Describes the sequence of steps.\n
@@ -155,7 +167,7 @@ class CnewPGstepStudy
 		 *              !!IMPORTANT!!: since there is nothing before the first
 		 *           half step, the first slide parameter must always be 0.\n
 		 */
-		void drawSteps(ofstream & fb, vector<double> vect_input, char leftOrRightFirstStable, bool halfStepsON, bool slideON);
+		void drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
 
 
 
