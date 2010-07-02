@@ -65,7 +65,7 @@ int main (int argc, char *argv[]) {
 
   if(option==1) {
 	
-	NPSS->drawSeqStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, t4, t5, stepsVect, left_or_right, 0.5, -0.5, 1.5, -1.5, 0.5);
+	NPSS->drawSeqStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, t4, t5, stepsVect, left_or_right, 0.5);
 // 
 	NPSS->plotOneDimensionCOMZMPSeqStep(ofst_comzmpx, 'x', incrTime, body_height, gravity, t1, t2, t3, t4, t5, stepsVect, left_or_right);  
 
@@ -74,7 +74,7 @@ int main (int argc, char *argv[]) {
 
 } else if(option==2) {
 
-	NPSS->drawSeqHalfStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right, 0.5, -0.5, 1.5, -1.5, 0.5);
+	NPSS->drawSeqHalfStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right, 0.5);
 // 
 	NPSS->plotOneDimensionCOMZMPSeqHalfStep(ofst_comzmpx, 'x', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right);  
 
@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
 
 } else if(option==3) {
 
-	NPSS->drawSeqSlidedHalfStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right, 0.5, -0.5, 1.5, -1.5, 0.5);
+	NPSS->drawSeqSlidedHalfStepFeatures(ofst_steps, incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right, 0.5);
 // 
 	NPSS->plotOneDimensionCOMZMPSeqSlidedHalfStep(ofst_comzmpx, 'x', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right);  
 

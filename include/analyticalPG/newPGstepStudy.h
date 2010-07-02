@@ -167,11 +167,11 @@ class CnewPGstepStudy
 		 *              !!IMPORTANT!!: since there is nothing before the first
 		 *           half step, the first slide parameter must always be 0.\n
 		 */
-		void drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+		void drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet);
 
-		void drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+		void drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet);
 
-		void drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+		void drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet);
 
 		void plotOneDimensionCOMZMPSeqStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable);
 

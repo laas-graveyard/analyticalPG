@@ -15,8 +15,10 @@ CnewPGstepStudy::~CnewPGstepStudy()
 
 }
 
-void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet)
 {
+
+	double downBound, upBound, leftBound, rightBound;
 
 	StepFeatures stepF;
 	produceSeqStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
@@ -25,7 +27,7 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 	double centre_y;
 	double abs_orientation;	
 
-	for(int i=0; i < (int) (vect_input.size())/3 ; i++)
+	for(int i=0; i < (int) (vect_input.size()-6)/4+2 ; i++)
 	{
 
 		double abs_orientationRAD;
@@ -34,6 +36,11 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 			centre_x = vect_input[0];
 			centre_y = vect_input[1];
 			abs_orientation = vect_input[2] * PI/180;
+
+			leftBound = -centre_y;
+			rightBound = -centre_y;	
+			upBound = centre_x;
+			downBound = centre_x;
 		}
 		else if(i==1) {
 			centre_x = vect_input[3];
@@ -50,13 +57,18 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 
 		abs_orientationRAD = abs_orientation * PI/180;
 
-		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[3*i]-sin(abs_orientationRAD)*vect_input[3*i+1];
-		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[3*i]+cos(abs_orientationRAD)*vect_input[3*i+1];
-		abs_orientation = abs_orientation + vect_input[3*i+2];	
+		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[4*i-1]-sin(abs_orientationRAD)*vect_input[4*i];
+		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[4*i-1]+cos(abs_orientationRAD)*vect_input[4*i];
+		abs_orientation = abs_orientation + vect_input[4*i+1];	
 
 		abs_orientationRAD = abs_orientation * PI/180;
 
 		}
+
+		leftBound = min(leftBound,-centre_y-0.24*coefFeet);
+		rightBound = max(rightBound,-centre_y+0.24*coefFeet);
+		downBound = min(downBound,centre_x-0.24*coefFeet);
+		upBound = max(upBound,centre_x+0.24*coefFeet);
 
 		vector<double> cosinuss (4, 0);
 		vector<double> sinuss (4, 0);
@@ -97,7 +109,16 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 
 	}
 
-	//we plot a big rectangle supposed to contain the whole track: 
+	double squareCenter_h = (rightBound + leftBound)/2;
+	double squareCenter_v = (upBound + downBound)/2;
+	double halfSide = max((rightBound - leftBound)/2,(upBound - downBound)/2);
+
+	leftBound = squareCenter_h - halfSide;
+	rightBound = squareCenter_h + halfSide;
+	downBound = squareCenter_v - halfSide;
+	upBound =squareCenter_v + halfSide;
+
+	//we plot a big rectangle which contains the whole track: 
 	fb << leftBound
 		<< " " << downBound
 		<< " " << leftBound
@@ -192,11 +213,13 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 }
 
 
-void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet)
 {
 
 	StepFeatures stepF;
 	produceSeqHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	double downBound, upBound, leftBound, rightBound;
 
 	double centre_x;
 	double centre_y;
@@ -211,6 +234,11 @@ void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, do
 			centre_x = vect_input[0];
 			centre_y = vect_input[1];
 			abs_orientation = vect_input[2] * PI/180;
+
+			leftBound = -centre_y;
+			rightBound = -centre_y;	
+			upBound = centre_x;
+			downBound = centre_x;
 		}
 		else if(i==1) {
 			centre_x = vect_input[3];
@@ -233,7 +261,12 @@ void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, do
 
 		abs_orientationRAD = abs_orientation * PI/180;
 
-		}		
+		}	
+
+		leftBound = min(leftBound,-centre_y-0.24*coefFeet);
+		rightBound = max(rightBound,-centre_y+0.24*coefFeet);
+		downBound = min(downBound,centre_x-0.24*coefFeet);
+		upBound = max(upBound,centre_x+0.24*coefFeet);	
 
 		vector<double> cosinuss (4, 0);
 		vector<double> sinuss (4, 0);
@@ -273,7 +306,16 @@ void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, do
 			<< endl << endl;
 	}
 
-	//we plot a big rectangle supposed to contain the whole track: 
+	double squareCenter_h = (rightBound + leftBound)/2;
+	double squareCenter_v = (upBound + downBound)/2;
+	double halfSide = max((rightBound - leftBound)/2,(upBound - downBound)/2);
+
+	leftBound = squareCenter_h - halfSide;
+	rightBound = squareCenter_h + halfSide;
+	downBound = squareCenter_v - halfSide;
+	upBound =squareCenter_v + halfSide;
+
+	//we plot a big rectangle which contains the whole track: 
 	fb << leftBound
 		<< " " << downBound
 		<< " " << leftBound
@@ -367,11 +409,13 @@ void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, do
 	fb << endl;
 }
 
-void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet)
 {
 
 	StepFeatures stepF;
 	produceSeqSlidedHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	double downBound, upBound, leftBound, rightBound;
 
 	double centre_x;
 	double centre_y;
@@ -386,6 +430,11 @@ void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTi
 			centre_x = vect_input[0];
 			centre_y = vect_input[1];
 			abs_orientation = vect_input[2] * PI/180;
+
+			leftBound = -centre_y;
+			rightBound = -centre_y;	
+			upBound = centre_x;
+			downBound = centre_x;
 		}
 		else if(i==1) {
 			centre_x = vect_input[3];
@@ -409,6 +458,11 @@ void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTi
 		abs_orientationRAD = abs_orientation * PI/180;
 
 		}		
+
+		leftBound = min(leftBound,-centre_y-0.24*coefFeet);
+		rightBound = max(rightBound,-centre_y+0.24*coefFeet);
+		downBound = min(downBound,centre_x-0.24*coefFeet);
+		upBound = max(upBound,centre_x+0.24*coefFeet);
 
 		vector<double> cosinuss (4, 0);
 		vector<double> sinuss (4, 0);
@@ -448,7 +502,16 @@ void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTi
 			<< endl << endl;
 	}
 
-	//we plot a big rectangle supposed to contain the whole track: 
+	double squareCenter_h = (rightBound + leftBound)/2;
+	double squareCenter_v = (upBound + downBound)/2;
+	double halfSide = max((rightBound - leftBound)/2,(upBound - downBound)/2);
+
+	leftBound = squareCenter_h - halfSide;
+	rightBound = squareCenter_h + halfSide;
+	downBound = squareCenter_v - halfSide;
+	upBound =squareCenter_v + halfSide;
+
+	//we plot a big rectangle which contains the whole track: 
 	fb << leftBound
 		<< " " << downBound
 		<< " " << leftBound
@@ -1255,11 +1318,11 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 
 	vector<double> comTrajX;
 	vector<double> zmpTrajX;
-	genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, vectStep_input[0], vectStep_input[6]/2, t1, t2, t3, t4, t5);
+	genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, vectStep_input[0], vectStep_input[7]/2, t1, t2, t3, t4, t5);
 
 	vector<double> comTrajY;
 	vector<double> zmpTrajY;
-	genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, vectStep_input[1], vectStep_input[7]/2, t1, t2, t3, t4, t5);
+	genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, vectStep_input[1], vectStep_input[8]/2, t1, t2, t3, t4, t5);
 
 	vector<double> footXtraj;
 	vector<double> footYtraj;
