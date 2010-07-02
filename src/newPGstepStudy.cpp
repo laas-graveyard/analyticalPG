@@ -10,91 +10,16 @@ CnewPGstepStudy::CnewPGstepStudy()
 
 }
 
-
 CnewPGstepStudy::~CnewPGstepStudy()
 {
 
 }
 
-// void CnewPGstepStudy::setSteps(MAL_VECTOR(,double) vect_input)
-// {
-// 
-// 	mp_stepsInput = vect_input;
-// 
-// 	//change in case of polar input:
-// 	if (mp_coordsConversion == PolarINPUT)
-// 	{
-// 		mp_stepsVector.clear();
-// 		mp_stepsVector = vect_input;
-// 
-// 		//from feet to ankles:
-// 		if(mp_leftOrRightFirstStable == 'R')
-// 		{
-// 			mp_stepsVector[0]+=-cos(mp_stepsVector[2]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[1]+=-sin(mp_stepsVector[2]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[3]+=-cos(mp_stepsVector[5]*PI/180+PI/2)*0.035;
-// 			mp_stepsVector[4]+=-sin(mp_stepsVector[5]*PI/180+PI/2)*0.035;
-// 		}
-// 		else if(mp_leftOrRightFirstStable == 'L')
-// 		{
-// 			mp_stepsVector[3]+=-cos(mp_stepsVector[5]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[4]+=-sin(mp_stepsVector[5]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[0]+=-cos(mp_stepsVector[2]*PI/180+PI/2)*0.035;
-// 			mp_stepsVector[1]+=-sin(mp_stepsVector[2]*PI/180+PI/2)*0.035;
-// 		}
-// 
-// 		mp_foot1X1=mp_stepsVector[0];
-// 		mp_foot1Y1=mp_stepsVector[1];
-// 		mp_foot1Theta1=mp_stepsVector[2]*PI/180;
-// 		mp_foot2X1=mp_stepsVector[3];
-// 		mp_foot2Y1=mp_stepsVector[4];
-// 		mp_foot2Theta1=mp_stepsVector[5]*PI/180;
-// 
-// 		for(unsigned int i=2; i<mp_stepsVector.size()/3;i++)
-// 		{
-// 			//conversion from polar to cartesian:
-// 			double tmpx = mp_stepsVector[3*i+1]*sin(mp_stepsVector[3*i+0]*PI/180);
-// 			double tmpy = mp_stepsVector[3*i+1]*cos(mp_stepsVector[3*i+0]*PI/180);
-// 			mp_stepsVector[3*i+0] = tmpx;
-// 			mp_stepsVector[3*i+1] = tmpy;
-// 		}
-// 	}
-// 	//and also change in case of cartesian input (conversion feet/ankles...)
-// 	else if (mp_coordsConversion == CartesianINPUT)
-// 	{
-// 		mp_stepsVector = vect_input;
-// 
-// 		//from feet to ankles:
-// 		if(mp_leftOrRightFirstStable == 'R')
-// 		{
-// 			mp_stepsVector[0]+=-cos(mp_stepsVector[2]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[1]+=-sin(mp_stepsVector[2]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[3]+=-cos(mp_stepsVector[5]*PI/180+PI/2)*0.035;
-// 			mp_stepsVector[4]+=-sin(mp_stepsVector[5]*PI/180+PI/2)*0.035;
-// 		}
-// 		else if(mp_leftOrRightFirstStable == 'L')
-// 		{
-// 			mp_stepsVector[3]+=-cos(mp_stepsVector[5]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[4]+=-sin(mp_stepsVector[5]*PI/180-PI/2)*0.035;
-// 			mp_stepsVector[0]+=-cos(mp_stepsVector[2]*PI/180+PI/2)*0.035;
-// 			mp_stepsVector[1]+=-sin(mp_stepsVector[2]*PI/180+PI/2)*0.035;
-// 		}
-// 
-// 		mp_foot1X1=mp_stepsVector[0];
-// 		mp_foot1Y1=mp_stepsVector[1];
-// 		mp_foot1Theta1=mp_stepsVector[2]*PI/180;
-// 		mp_foot2X1=mp_stepsVector[3];
-// 		mp_foot2Y1=mp_stepsVector[4];
-// 		mp_foot2Theta1=mp_stepsVector[5]*PI/180;
-// 	}
-// }
-
-
-void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
 {
 
 	StepFeatures stepF;
-	produceSeqStepFeatures(stepF, incrTime, zc, g, stepHeight, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
+	produceSeqStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
 
 	double centre_x;
 	double centre_y;
@@ -263,261 +188,486 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 			<< " " << stepF.zmpTrajX[i+1]
 			<< endl << endl;
 	}
-	fb << endl;
-	//After 3 endl, new index in gnuplot.	
+	fb << endl;	
+}
 
-/*
-	//last values before the loop
-	centre_x = vect_input[0];
-	centre_y = vect_input[1];	
-	abs_orientation = vect_input[2];
-	double previous_centre_x = vect_input[3];
-	double previous_centre_y = vect_input[4];
 
-	for(int i=2; i < (int) (vect_input.size())/3 ; i++)
+void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+{
+
+	StepFeatures stepF;
+	produceSeqHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	double centre_x;
+	double centre_y;
+	double abs_orientation;	
+
+	for(int i=0; i < (int) (vect_input.size()-6)/5+2 ; i++)
 	{
 
-		double abs_orientationRAD = abs_orientation * PI/180;
+		double abs_orientationRAD;
 
-		double prevprevious_centre_x = previous_centre_x;
-		double prevprevious_centre_y = previous_centre_y;
-		previous_centre_x = centre_x;
-		previous_centre_y = centre_y;
+		if(i==0) {
+			centre_x = vect_input[0];
+			centre_y = vect_input[1];
+			abs_orientation = vect_input[2] * PI/180;
+		}
+		else if(i==1) {
+			centre_x = vect_input[3];
+			centre_y = vect_input[4];
+			abs_orientationRAD = vect_input[5] * PI/180;
+		}
+		else if(i==2) {
+			centre_x = vect_input[0];
+			centre_y = vect_input[1];
+			abs_orientation = vect_input[2];
+		} 
+	
+		if(i>=2){
 
-		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[3*i]-sin(abs_orientationRAD)*vect_input[3*i+1];
-		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[3*i]+cos(abs_orientationRAD)*vect_input[3*i+1];
-		abs_orientation = abs_orientation + vect_input[3*i+2];	
+		abs_orientationRAD = abs_orientation * PI/180;
 
-		fb << -prevprevious_centre_y
-			<< " " << prevprevious_centre_x
-			<< " " << -centre_y
-			<< " " << +centre_x
-			<< endl;
-		fb << -centre_y
-			<< " " << +centre_x
-			<< " " << -centre_y
-			<< " " << +centre_x
+		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[5*i-2]-sin(abs_orientationRAD)*vect_input[5*i-1];
+		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[5*i-2]+cos(abs_orientationRAD)*vect_input[5*i-1];
+		abs_orientation = abs_orientation + vect_input[5*i];	
+
+		abs_orientationRAD = abs_orientation * PI/180;
+
+		}		
+
+		vector<double> cosinuss (4, 0);
+		vector<double> sinuss (4, 0);
+		vector<double> x (4, 0);
+		vector<double> y (4, 0);
+
+		cosinuss[0] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*0.065;
+		sinuss[0] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*0.115;
+
+		cosinuss[1] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*0.065;
+		sinuss[1] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*(-0.115);
+
+		cosinuss[2] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*(-0.065);
+		sinuss[2] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*(-0.115);
+
+		cosinuss[3] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*(-0.065);
+		sinuss[3] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*0.115;
+
+		for(int j = 0; j<4; j++)
+		{
+			x[j] = centre_x + cosinuss[j]*coefFeet;
+			y[j] = centre_y + sinuss[j]*coefFeet;
+		}
+
+		for(int j = 0; j<4; j++)
+		{
+			fb << -y[j]
+				<< " " << x[j]
+				<< " " << -y[(j+1) % 4] + y[j]
+				<< " " << x[(j+1) % 4] - x[j]
+				<< endl;
+		}
+		fb << -y[0]
+			<< " " << +x[0]
+			<< " " << -y[0]
+			<< " " << +x[0]
 			<< endl << endl;
 	}
 
+	//we plot a big rectangle supposed to contain the whole track: 
+	fb << leftBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << upBound
+		<< endl;
+	fb << leftBound
+		<< " " << upBound
+		<< " " << rightBound
+		<< " " << upBound
+		<< endl;
+	fb << rightBound
+		<< " " << upBound
+		<< " " << rightBound
+		<< " " << downBound
+		<< endl;
+	fb << rightBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << downBound
+		<< endl;
+	fb << leftBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << downBound
+		<< endl << endl;
+
 	fb << endl;
-	//After 3 endl, new index in gnuplot.
+	//After 3 endl, new index in gnuplot.	
 
-	//last values before the loop
-	centre_x = vect_input[0];
-	centre_y = vect_input[1];
-	abs_orientation = vect_input[2];
-
-	char trig = leftOrRightFirstStable;
-	for(int i=2; i < (int) (vect_input.size())/3 ; i++)
+	for(int i=0; i < stepF.size-1 ; i++)
 	{
-
-		double abs_orientationRAD = abs_orientation * PI/180;
-
-		double previous_centre_x = centre_x;
-		double previous_centre_y = centre_y;
-
-		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[3*i]-sin(abs_orientationRAD)*vect_input[3*i+1];
-		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[3*i]+cos(abs_orientationRAD)*vect_input[3*i+1];
-		abs_orientation = abs_orientation + vect_input[3*i+2];		
-
-		if(i==0)
-		{
-			fb << -centre_y << " " << centre_x << " " << trig << "#" << endl;
-		}
-		else if(i==1)
-		{
-			if(trig == 'R') trig = 'L';
-			else trig = 'R';
-			fb << -centre_y << " " << centre_x << " " << trig << "~" << endl;
-		}
-		else
-		{
-			fb << -centre_y << " " << centre_x << " " << trig << i-1 << endl;
-			if(trig == 'R') trig = 'L';
-			else trig = 'R';
-		}
+		fb << -stepF.rightfootYtraj[i] 
+			<< " " << stepF.rightfootXtraj[i]
+			<< " " << -stepF.rightfootYtraj[i+1]
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< endl;
+		fb << -stepF.rightfootYtraj[i+1] 
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< " " << -stepF.rightfootYtraj[i+1]
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< endl << endl;
 	}
-
 	fb << endl;
-	fb << endl;*/
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.leftfootYtraj[i] 
+			<< " " << stepF.leftfootXtraj[i]
+			<< " " << -stepF.leftfootYtraj[i+1]
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< endl;
+		fb << -stepF.leftfootYtraj[i+1] 
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< " " << -stepF.leftfootYtraj[i+1]
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.comTrajY[i] 
+			<< " " << stepF.comTrajX[i]
+			<< " " << -stepF.comTrajY[i+1]
+			<< " " << stepF.comTrajX[i+1]
+			<< endl;
+		fb << -stepF.comTrajY[i+1] 
+			<< " " << stepF.comTrajX[i+1]
+			<< " " << -stepF.comTrajY[i+1]
+			<< " " << stepF.comTrajX[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.zmpTrajY[i] 
+			<< " " << stepF.zmpTrajX[i]
+			<< " " << -stepF.zmpTrajY[i+1]
+			<< " " << stepF.zmpTrajX[i+1]
+			<< endl;
+		fb << -stepF.zmpTrajY[i+1] 
+			<< " " << stepF.zmpTrajX[i+1]
+			<< " " << -stepF.zmpTrajY[i+1]
+			<< " " << stepF.zmpTrajX[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
 }
 
-// void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
-// {
-// 
-// 	StepFeatures stepF;
-// 	produceSeqStepFeatures(stepF, incrTime, zc, g, stepHeight, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
-// 
-// 	double centre_x;
-// 	double centre_y;
-// 	double abs_orientation;	
-// 
-// 	for(int i=0; i < (int) (vect_input.size())/3 ; i++)
-// 	{
-// 
-// 		double abs_orientationRAD;
-// 
-// 		if(i==0) {
-// 			centre_x = vect_input[0];
-// 			centre_y = vect_input[1];
-// 			abs_orientation = vect_input[2] * PI/180;
-// 		}
-// 		else if(i==1) {
-// 			centre_x = vect_input[3];
-// 			centre_y = vect_input[4];
-// 			abs_orientationRAD = vect_input[5] * PI/180;
-// 		}
-// 		else if(i==2) {
-// 			centre_x = vect_input[0];
-// 			centre_y = vect_input[1];
-// 			abs_orientation = vect_input[2];
-// 		} 
-// 	
-// 		if(i>=2){
-// 
-// 		abs_orientationRAD = abs_orientation * PI/180;
-// 
-// 		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[3*i]-sin(abs_orientationRAD)*vect_input[3*i+1];
-// 		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[3*i]+cos(abs_orientationRAD)*vect_input[3*i+1];
-// 		abs_orientation = abs_orientation + vect_input[3*i+2];	
-// 
-// 		abs_orientationRAD = abs_orientation * PI/180;
-// 
-// 		}		
-// 
-// 		vector<double> cosinuss (4, 0);
-// 		vector<double> sinuss (4, 0);
-// 		vector<double> x (4, 0);
-// 		vector<double> y (4, 0);
-// 
-// 		cosinuss[0] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*0.065;
-// 		sinuss[0] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*0.115;
-// 
-// 		cosinuss[1] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*0.065;
-// 		sinuss[1] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*(-0.115);
-// 
-// 		cosinuss[2] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*(-0.065);
-// 		sinuss[2] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*(-0.115);
-// 
-// 		cosinuss[3] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*(-0.065);
-// 		sinuss[3] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*0.115;
-// 
-// 		for(int j = 0; j<4; j++)
-// 		{
-// 			x[j] = centre_x + cosinuss[j]*coefFeet;
-// 			y[j] = centre_y + sinuss[j]*coefFeet;
-// 		}
-// 
-// 		for(int j = 0; j<4; j++)
-// 		{
-// 			fb << -y[j]
-// 				<< " " << x[j]
-// 				<< " " << -y[(j+1) % 4] + y[j]
-// 				<< " " << x[(j+1) % 4] - x[j]
-// 				<< endl;
-// 		}
-// 		fb << -y[0]
-// 			<< " " << +x[0]
-// 			<< " " << -y[0]
-// 			<< " " << +x[0]
-// 			<< endl << endl;
-// 
-// 	}
-// 
-// 	//we plot a big rectangle supposed to contain the whole track: 
-// 	fb << leftBound
-// 		<< " " << downBound
-// 		<< " " << leftBound
-// 		<< " " << upBound
-// 		<< endl;
-// 	fb << leftBound
-// 		<< " " << upBound
-// 		<< " " << rightBound
-// 		<< " " << upBound
-// 		<< endl;
-// 	fb << rightBound
-// 		<< " " << upBound
-// 		<< " " << rightBound
-// 		<< " " << downBound
-// 		<< endl;
-// 	fb << rightBound
-// 		<< " " << downBound
-// 		<< " " << leftBound
-// 		<< " " << downBound
-// 		<< endl;
-// 	fb << leftBound
-// 		<< " " << downBound
-// 		<< " " << leftBound
-// 		<< " " << downBound
-// 		<< endl << endl;
-// 
-// 	fb << endl;
-// 	//After 3 endl, new index in gnuplot.	
-// 
-// 	for(int i=0; i < stepF.size-1 ; i++)
-// 	{
-// 		fb << -stepF.rightfootYtraj[i] 
-// 			<< " " << stepF.rightfootXtraj[i]
-// 			<< " " << -stepF.rightfootYtraj[i+1]
-// 			<< " " << stepF.rightfootXtraj[i+1]
-// 			<< endl;
-// 		fb << -stepF.rightfootYtraj[i+1] 
-// 			<< " " << stepF.rightfootXtraj[i+1]
-// 			<< " " << -stepF.rightfootYtraj[i+1]
-// 			<< " " << stepF.rightfootXtraj[i+1]
-// 			<< endl << endl;
-// 	}
-// 	fb << endl;
-// 	//After 3 endl, new index in gnuplot.	
-// 
-// 	for(int i=0; i < stepF.size-1 ; i++)
-// 	{
-// 		fb << -stepF.leftfootYtraj[i] 
-// 			<< " " << stepF.leftfootXtraj[i]
-// 			<< " " << -stepF.leftfootYtraj[i+1]
-// 			<< " " << stepF.leftfootXtraj[i+1]
-// 			<< endl;
-// 		fb << -stepF.leftfootYtraj[i+1] 
-// 			<< " " << stepF.leftfootXtraj[i+1]
-// 			<< " " << -stepF.leftfootYtraj[i+1]
-// 			<< " " << stepF.leftfootXtraj[i+1]
-// 			<< endl << endl;
-// 	}
-// 	fb << endl;
-// 	//After 3 endl, new index in gnuplot.	
-// 
-// 	for(int i=0; i < stepF.size-1 ; i++)
-// 	{
-// 		fb << -stepF.comTrajY[i] 
-// 			<< " " << stepF.comTrajX[i]
-// 			<< " " << -stepF.comTrajY[i+1]
-// 			<< " " << stepF.comTrajX[i+1]
-// 			<< endl;
-// 		fb << -stepF.comTrajY[i+1] 
-// 			<< " " << stepF.comTrajX[i+1]
-// 			<< " " << -stepF.comTrajY[i+1]
-// 			<< " " << stepF.comTrajX[i+1]
-// 			<< endl << endl;
-// 	}
-// 	fb << endl;
-// 	//After 3 endl, new index in gnuplot.	
-// 
-// 	for(int i=0; i < stepF.size-1 ; i++)
-// 	{
-// 		fb << -stepF.zmpTrajY[i] 
-// 			<< " " << stepF.zmpTrajX[i]
-// 			<< " " << -stepF.zmpTrajY[i+1]
-// 			<< " " << stepF.zmpTrajX[i+1]
-// 			<< endl;
-// 		fb << -stepF.zmpTrajY[i+1] 
-// 			<< " " << stepF.zmpTrajX[i+1]
-// 			<< " " << -stepF.zmpTrajY[i+1]
-// 			<< " " << stepF.zmpTrajX[i+1]
-// 			<< endl << endl;
-// 	}
-// 	fb << endl;
-// }
+void CnewPGstepStudy::drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound)
+{
+
+	StepFeatures stepF;
+	produceSeqSlidedHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	double centre_x;
+	double centre_y;
+	double abs_orientation;	
+
+	for(int i=0; i < (int) (vect_input.size()-6)/7+2 ; i++)
+	{
+
+		double abs_orientationRAD;
+
+		if(i==0) {
+			centre_x = vect_input[0];
+			centre_y = vect_input[1];
+			abs_orientation = vect_input[2] * PI/180;
+		}
+		else if(i==1) {
+			centre_x = vect_input[3];
+			centre_y = vect_input[4];
+			abs_orientationRAD = vect_input[5] * PI/180;
+		}
+		else if(i==2) {
+			centre_x = vect_input[0];
+			centre_y = vect_input[1];
+			abs_orientation = vect_input[2];
+		} 
+	
+		if(i>=2){
+
+		abs_orientationRAD = abs_orientation * PI/180;
+
+		centre_x = centre_x + cos(abs_orientationRAD)*vect_input[7*i-4]-sin(abs_orientationRAD)*vect_input[7*i-3];
+		centre_y = centre_y + sin(abs_orientationRAD)*vect_input[7*i-4]+cos(abs_orientationRAD)*vect_input[7*i-3];
+		abs_orientation = abs_orientation + vect_input[7*i-2];	
+
+		abs_orientationRAD = abs_orientation * PI/180;
+
+		}		
+
+		vector<double> cosinuss (4, 0);
+		vector<double> sinuss (4, 0);
+		vector<double> x (4, 0);
+		vector<double> y (4, 0);
+
+		cosinuss[0] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*0.065;
+		sinuss[0] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*0.115;
+
+		cosinuss[1] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*0.065;
+		sinuss[1] = cos(abs_orientationRAD)*0.065 + sin(abs_orientationRAD)*(-0.115);
+
+		cosinuss[2] = cos(abs_orientationRAD)*(-0.115) - sin(abs_orientationRAD)*(-0.065);
+		sinuss[2] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*(-0.115);
+
+		cosinuss[3] = cos(abs_orientationRAD)*0.115 - sin(abs_orientationRAD)*(-0.065);
+		sinuss[3] = cos(abs_orientationRAD)*(-0.065) + sin(abs_orientationRAD)*0.115;
+
+		for(int j = 0; j<4; j++)
+		{
+			x[j] = centre_x + cosinuss[j]*coefFeet;
+			y[j] = centre_y + sinuss[j]*coefFeet;
+		}
+
+		for(int j = 0; j<4; j++)
+		{
+			fb << -y[j]
+				<< " " << x[j]
+				<< " " << -y[(j+1) % 4] + y[j]
+				<< " " << x[(j+1) % 4] - x[j]
+				<< endl;
+		}
+		fb << -y[0]
+			<< " " << +x[0]
+			<< " " << -y[0]
+			<< " " << +x[0]
+			<< endl << endl;
+	}
+
+	//we plot a big rectangle supposed to contain the whole track: 
+	fb << leftBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << upBound
+		<< endl;
+	fb << leftBound
+		<< " " << upBound
+		<< " " << rightBound
+		<< " " << upBound
+		<< endl;
+	fb << rightBound
+		<< " " << upBound
+		<< " " << rightBound
+		<< " " << downBound
+		<< endl;
+	fb << rightBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << downBound
+		<< endl;
+	fb << leftBound
+		<< " " << downBound
+		<< " " << leftBound
+		<< " " << downBound
+		<< endl << endl;
+
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.rightfootYtraj[i] 
+			<< " " << stepF.rightfootXtraj[i]
+			<< " " << -stepF.rightfootYtraj[i+1]
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< endl;
+		fb << -stepF.rightfootYtraj[i+1] 
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< " " << -stepF.rightfootYtraj[i+1]
+			<< " " << stepF.rightfootXtraj[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.leftfootYtraj[i] 
+			<< " " << stepF.leftfootXtraj[i]
+			<< " " << -stepF.leftfootYtraj[i+1]
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< endl;
+		fb << -stepF.leftfootYtraj[i+1] 
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< " " << -stepF.leftfootYtraj[i+1]
+			<< " " << stepF.leftfootXtraj[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.comTrajY[i] 
+			<< " " << stepF.comTrajX[i]
+			<< " " << -stepF.comTrajY[i+1]
+			<< " " << stepF.comTrajX[i+1]
+			<< endl;
+		fb << -stepF.comTrajY[i+1] 
+			<< " " << stepF.comTrajX[i+1]
+			<< " " << -stepF.comTrajY[i+1]
+			<< " " << stepF.comTrajX[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << -stepF.zmpTrajY[i] 
+			<< " " << stepF.zmpTrajX[i]
+			<< " " << -stepF.zmpTrajY[i+1]
+			<< " " << stepF.zmpTrajX[i+1]
+			<< endl;
+		fb << -stepF.zmpTrajY[i+1] 
+			<< " " << stepF.zmpTrajX[i+1]
+			<< " " << -stepF.zmpTrajY[i+1]
+			<< " " << stepF.zmpTrajX[i+1]
+			<< endl << endl;
+	}
+	fb << endl;
+}
+
+void CnewPGstepStudy::plotOneDimensionCOMZMPSeqStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable) {
+
+	StepFeatures stepF;
+	produceSeqStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='x') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+
+	}
+	else if(whichDimension=='y') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+	
+	}
+}
+
+void CnewPGstepStudy::plotOneDimensionCOMZMPSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable){
+
+	StepFeatures stepF;
+	produceSeqHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='x') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+
+	}
+	else if(whichDimension=='y') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+	
+	}
+}
+
+void CnewPGstepStudy::plotOneDimensionCOMZMPSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable){
+
+	StepFeatures stepF;
+	produceSeqSlidedHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='x') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajX[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+
+	}
+	else if(whichDimension=='y') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.comTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.	
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.zmpTrajY[i] << endl; 
+	}
+	fb << endl << endl;
+	//After 3 endl, new index in gnuplot.
+	
+	}
+}
+
+
+
+
 
 double w (double t, double g, double zc, double delta0, double deltaX, double t1, double t2, double V, double W)
 {
@@ -731,18 +881,18 @@ double searchVinit (double g, double zc, double delta0, double deltaX, double de
 }
 
 
-void CnewPGstepStudy::plotOneDimensionCOMtrajectory(ofstream & fb, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5)
-{
-
-	double vinit = searchVinit(g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0);
-
-	for(double i = 0.0 ; i < t5 ; i += incrTime)
-	{
-
-		fb << i << " " << hVinitCOMonly(i, g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0, vinit) << endl;
-	}
-
-}
+// void CnewPGstepStudy::plotOneDimensionCOMtrajectory(ofstream & fb, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5)
+// {
+// 
+// 	double vinit = searchVinit(g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0);
+// 
+// 	for(double i = 0.0 ; i < t5 ; i += incrTime)
+// 	{
+// 
+// 		fb << i << " " << hVinitCOMonly(i, g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0, vinit) << endl;
+// 	}
+// 
+// }
 
 
 void CnewPGstepStudy::genCOMZMPtrajectory(vector<double> & outputCOM, vector<double> & outputZMP, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5)
@@ -1098,8 +1248,10 @@ void CnewPGstepStudy::addStepFeaturesWithSlide(
 }
 
 
-void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable)
+void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable)
 {
+
+	double stepHeight = vectStep_input[6];
 
 	vector<double> comTrajX;
 	vector<double> zmpTrajX;
@@ -1111,13 +1263,13 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 
 	vector<double> footXtraj;
 	vector<double> footYtraj;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[6], vectStep_input[1]+vectStep_input[7], 0.02, t1, t2, t3, t4, t5);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], 0.02, t1, t2, t3, t4, t5);
 
 	vector<double> footHeight;
 	genFOOTheight(footHeight, incrTime, stepHeight, t1, t2, t3, t4, t5);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[8], 0.02, t1, t2, t3, t4, t5);
+	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], 0.02, t1, t2, t3, t4, t5);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1136,7 +1288,7 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 	}
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[8], 0.02, t1, t2, t3, t4, t5);
+	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[9], 0.02, t1, t2, t3, t4, t5);
 
 
 	stepF.comTrajX = comTrajX;
@@ -1320,7 +1472,7 @@ void CnewPGstepStudy::produceOneDOWNHalfStepFeatures(StepFeatures & stepF, doubl
 }
 
 
-void CnewPGstepStudy::produceSeqStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
+void CnewPGstepStudy::produceSeqStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
 {	
 
 	char alternate = leftOrRightFootStable;
@@ -1330,30 +1482,31 @@ void CnewPGstepStudy::produceSeqStepFeatures(StepFeatures & stepF, double incrTi
 	int bigCount=-1;
 
 	vector<double> tmpNine;	
-	tmpNine.resize(9);
+	tmpNine.resize(10);
 	
-	tmpNine[6] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
-	tmpNine[7] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
-	tmpNine[8] = -vectSteps_input[5];
+	tmpNine[7] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
+	tmpNine[8] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
+	tmpNine[9] = -vectSteps_input[5];
 
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
+	for(unsigned int i = 1; i <= (vectSteps_input.size()-6)/4; i++) {
 
-		tmpNine[0] = (tmpNine[6]/2)*cos(-tmpNine[8]*PI/180) - (tmpNine[7]/2)*sin(-tmpNine[8]*PI/180);
-		tmpNine[1] = (tmpNine[6]/2)*sin(-tmpNine[8]*PI/180) + (tmpNine[7]/2)*cos(-tmpNine[8]*PI/180);
+		tmpNine[0] = (tmpNine[7]/2)*cos(-tmpNine[9]*PI/180) - (tmpNine[8]/2)*sin(-tmpNine[9]*PI/180);
+		tmpNine[1] = (tmpNine[7]/2)*sin(-tmpNine[9]*PI/180) + (tmpNine[8]/2)*cos(-tmpNine[9]*PI/180);
 		tmpNine[2] = 0;
 		tmpNine[3] = -tmpNine[0];
 		tmpNine[4] = -tmpNine[1];
-		tmpNine[5] = -tmpNine[8];
-		tmpNine[6] = vectSteps_input[3*i+3];
-		tmpNine[7] = vectSteps_input[3*i+4];
-		tmpNine[8] = vectSteps_input[3*i+5];
+		tmpNine[5] = -tmpNine[9];
+		tmpNine[6] = vectSteps_input[4*i+2];
+		tmpNine[7] = vectSteps_input[4*i+3];
+		tmpNine[8] = vectSteps_input[4*i+4];
+		tmpNine[9] = vectSteps_input[4*i+5];
 
 		vector<vector<double> > tmp_fb;
 		vector<vector<double> > tmp_fbZMP;	
 
 		StepFeatures tmp_step;			
 
-		produceOneStepFeatures(tmp_step, incrTime, zc, g, stepHeight, t1, t2, t3, t4, t5, tmpNine, alternate);
+		produceOneStepFeatures(tmp_step, incrTime, zc, g, t1, t2, t3, t4, t5, tmpNine, alternate);
 
 		vectSFeat.push_back(tmp_step);		
 
@@ -1520,266 +1673,4 @@ void CnewPGstepStudy::produceSeqSlidedHalfStepFeatures(StepFeatures & stepF, dou
 
 	stepF = vectSFeat[0];
 
-}
-
-
-void CnewPGstepStudy::produceGlobalLinkedCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
-{
-
-	char alternate = leftOrRightFootStable;
-	int bigCount=-1;
-
-	double angleCorrection = 0;
-
-
-	vector<vector<double> > allCOMsX;
-	vector<vector<double> > allCOMsY;
-	vector<vector<double> > allZMPsX;
-	vector<vector<double> > allZMPsY;
-
-	vector<double> tmpNine;	
-	tmpNine.resize(9);
-	
-	tmpNine[6] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
-	tmpNine[7] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
-	tmpNine[8] = -vectSteps_input[5];
-
-	angleCorrection = tmpNine[8];
-
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-
-		tmpNine[0] = (tmpNine[6]/2)*cos(-tmpNine[8]*PI/180) - (tmpNine[7]/2)*sin(-tmpNine[8]*PI/180);
-		tmpNine[1] = (tmpNine[6]/2)*sin(-tmpNine[8]*PI/180) + (tmpNine[7]/2)*cos(-tmpNine[8]*PI/180);
-		tmpNine[2] = 0;
-		tmpNine[3] = -tmpNine[0];
-		tmpNine[4] = -tmpNine[1];
-		tmpNine[5] = -tmpNine[8];
-
-		angleCorrection -= tmpNine[8];	
-	
-		tmpNine[6] = vectSteps_input[3*i+3];
-		tmpNine[7] = vectSteps_input[3*i+4];
-		tmpNine[8] = vectSteps_input[3*i+5];		
-
-		vector<double> comTrajX;
-		vector<double> zmpTrajX;
-
-		genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, 
-			tmpNine[0]*cos(-angleCorrection*PI/180) - tmpNine[1]*sin(-angleCorrection*PI/180),
-			tmpNine[6]/2*cos(-angleCorrection*PI/180) - tmpNine[7]/2*sin(-angleCorrection*PI/180), 
-			t1, t2, t3, t4, t5);
-
-		vector<double> comTrajY;
-		vector<double> zmpTrajY;
-		genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, 
-			tmpNine[0]*sin(-angleCorrection*PI/180) + tmpNine[1]*cos(-angleCorrection*PI/180), 
-			tmpNine[6]/2*sin(-angleCorrection*PI/180) + tmpNine[7]/2*cos(-angleCorrection*PI/180), 
-			t1, t2, t3, t4, t5);
-		
-		allCOMsX.push_back(comTrajX);
-		allCOMsY.push_back(comTrajY);
-		allZMPsX.push_back(zmpTrajX);
-		allZMPsY.push_back(zmpTrajY);
-
-		if(alternate == 'L') alternate = 'R'; else alternate = 'L';
-
-	}
-
-	int numberOfSteps = (vectSteps_input.size()/3 - 2);
-	int sizeOneLongStep = allCOMsX[0].size();
-	int sizeGap = ((int) ((t1+t5-t3) / incrTime));
-
-	vector<double> longCOMX (numberOfSteps*sizeOneLongStep-(numberOfSteps-1)*sizeGap,0);
-	vector<double> longCOMY (numberOfSteps*sizeOneLongStep-(numberOfSteps-1)*sizeGap,0);
-	vector<double> longZMPX (numberOfSteps*sizeOneLongStep-(numberOfSteps-1)*sizeGap,0);
-	vector<double> longZMPY (numberOfSteps*sizeOneLongStep-(numberOfSteps-1)*sizeGap,0);
-
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-	
-		for(int j = 0 ; j < sizeOneLongStep ; j++)
-		{
-
-		longCOMX[(i-1)*sizeOneLongStep+j-(i-1)*sizeGap] += allCOMsX[i-1][j];
-		longCOMY[(i-1)*sizeOneLongStep+j-(i-1)*sizeGap] += allCOMsY[i-1][j];
-		longZMPX[(i-1)*sizeOneLongStep+j-(i-1)*sizeGap] += allZMPsX[i-1][j];
-		longZMPY[(i-1)*sizeOneLongStep+j-(i-1)*sizeGap] += allZMPsY[i-1][j];
-
-		}
-	}
-
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-
-		for(unsigned int j = i*(sizeOneLongStep - sizeGap)+sizeGap; j<longCOMX.size(); j++) {
-
-		longCOMX[j] += allCOMsX[i-1][sizeOneLongStep-1];
-		longCOMY[j] += allCOMsY[i-1][sizeOneLongStep-1];
-		longZMPX[j] += allZMPsX[i-1][sizeOneLongStep-1];
-		longZMPY[j] += allZMPsY[i-1][sizeOneLongStep-1];
-
-		}
-
-	}
-
-	gCOMx = longCOMX;
-	gCOMy = longCOMY;
-	gZMPx = longZMPX;
-	gZMPy = longZMPY;
-
-}
-
-void CnewPGstepStudy::produceGlobalSeparateCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
-{
-
-	char alternate = leftOrRightFootStable;
-	int bigCount=-1;
-
-	double angleCorrection = 0;
-
-
-	vector<vector<double> > allCOMsX;
-	vector<vector<double> > allCOMsY;
-	vector<vector<double> > allZMPsX;
-	vector<vector<double> > allZMPsY;
-
-	vector<double> tmpNine;	
-	tmpNine.resize(9);
-	
-	tmpNine[6] = (vectSteps_input[0]*2)*cos(-vectSteps_input[5]*PI/180)-(vectSteps_input[1]*2)*sin(-vectSteps_input[5]*PI/180);
-	tmpNine[7] = (vectSteps_input[0]*2)*sin(-vectSteps_input[5]*PI/180)+(vectSteps_input[1]*2)*cos(-vectSteps_input[5]*PI/180) ;
-	tmpNine[8] = -vectSteps_input[5];
-
-	angleCorrection = tmpNine[8];
-
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-
-		tmpNine[0] = (tmpNine[6]/2)*cos(-tmpNine[8]*PI/180) - (tmpNine[7]/2)*sin(-tmpNine[8]*PI/180);
-		tmpNine[1] = (tmpNine[6]/2)*sin(-tmpNine[8]*PI/180) + (tmpNine[7]/2)*cos(-tmpNine[8]*PI/180);
-		tmpNine[2] = 0;
-		tmpNine[3] = -tmpNine[0];
-		tmpNine[4] = -tmpNine[1];
-		tmpNine[5] = -tmpNine[8];
-
-		angleCorrection -= tmpNine[8];	
-	
-		tmpNine[6] = vectSteps_input[3*i+3];
-		tmpNine[7] = vectSteps_input[3*i+4];
-		tmpNine[8] = vectSteps_input[3*i+5];		
-
-		vector<double> comTrajX;
-		vector<double> zmpTrajX;
-
-		genCOMZMPtrajectory(comTrajX, zmpTrajX, incrTime, zc, g, 0, 
-			tmpNine[0]*cos(-angleCorrection*PI/180) - tmpNine[1]*sin(-angleCorrection*PI/180),
-			tmpNine[6]/2*cos(-angleCorrection*PI/180) - tmpNine[7]/2*sin(-angleCorrection*PI/180), 
-			t1, t2, t3, t4, t5);
-
-		vector<double> comTrajY;
-		vector<double> zmpTrajY;
-		genCOMZMPtrajectory(comTrajY, zmpTrajY, incrTime, zc, g, 0, 
-			tmpNine[0]*sin(-angleCorrection*PI/180) + tmpNine[1]*cos(-angleCorrection*PI/180), 
-			tmpNine[6]/2*sin(-angleCorrection*PI/180) + tmpNine[7]/2*cos(-angleCorrection*PI/180), 
-			t1, t2, t3, t4, t5);
-		
-		allCOMsX.push_back(comTrajX);
-		allCOMsY.push_back(comTrajY);
-		allZMPsX.push_back(zmpTrajX);
-		allZMPsY.push_back(zmpTrajY);
-
-		if(alternate == 'L') alternate = 'R'; else alternate = 'L';
-
-	}
-
-	int numberOfSteps = (vectSteps_input.size()/3 - 2);
-	int sizeOneLongStep = allCOMsX[0].size();
-
-	vector<double> longCOMX (numberOfSteps*sizeOneLongStep,0);
-	vector<double> longCOMY (numberOfSteps*sizeOneLongStep,0);
-	vector<double> longZMPX (numberOfSteps*sizeOneLongStep,0);
-	vector<double> longZMPY (numberOfSteps*sizeOneLongStep,0);
-
-	int bigcounter=-1;
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-	
-		for(int j = 0 ; j < sizeOneLongStep ; j++)
-		{
-
-		longCOMX[(i-1)*sizeOneLongStep+j] += allCOMsX[i-1][j];
-		longCOMY[(i-1)*sizeOneLongStep+j] += allCOMsY[i-1][j];
-		longZMPX[(i-1)*sizeOneLongStep+j] += allZMPsX[i-1][j];
-		longZMPY[(i-1)*sizeOneLongStep+j] += allZMPsY[i-1][j];
-
-		}
-
-	}
-
-	for(unsigned int i = 1; i <= vectSteps_input.size()/3 - 2; i++) {
-
-		for(unsigned int j = i*sizeOneLongStep; j<longCOMX.size() ;j++) {
-
-		longCOMX[j] += allCOMsX[i-1][sizeOneLongStep-1];
-		longCOMY[j] += allCOMsY[i-1][sizeOneLongStep-1];
-		longZMPX[j] += allZMPsX[i-1][sizeOneLongStep-1];
-		longZMPY[j] += allZMPsY[i-1][sizeOneLongStep-1];
-
-		}
-
-	}
-
-	gCOMx = longCOMX;
-	gCOMy = longCOMY;
-	gZMPx = longZMPX;
-	gZMPy = longZMPY;
-
-}
-
-void CnewPGstepStudy::plotGlobalLinkedCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
-{
-	vector<double> gCOMx;
-	vector<double> gCOMy;
-	vector<double> gZMPx;
-	vector<double> gZMPy;
-		
-	produceGlobalLinkedCOMZMP(gCOMx, gCOMy, gZMPx, gZMPy, incrTime, zc, g, t1, t2, t3, t4, t5, vectSteps_input, leftOrRightFootStable);
-
-	for(unsigned int i = 0; i < gCOMx.size(); i++) {
-
-		fb << gCOMx[i] << " " << gCOMy[i] << endl;
-	
-	}
-
-	fb << endl;
- 	fb << endl;
-
-	for(unsigned int i = 0; i < gZMPx.size(); i++) {
-
-		fb << gZMPx[i] << " " << gZMPy[i] << endl;
-	
-	}
-	
-}
-
-void CnewPGstepStudy::plotGlobalSeparateCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable)
-{
-	vector<double> gCOMx;
-	vector<double> gCOMy;
-	vector<double> gZMPx;
-	vector<double> gZMPy;
-		
-	produceGlobalSeparateCOMZMP(gCOMx, gCOMy, gZMPx, gZMPy, incrTime, zc, g, t1, t2, t3, t4, t5, vectSteps_input, leftOrRightFootStable);
-
-	for(unsigned int i = 0; i < gCOMx.size(); i++) {
-
-		fb << gCOMx[i] << " " << gCOMy[i] << endl;
-	
-	}
-
-	fb << endl;
- 	fb << endl;
-
-	for(unsigned int i = 0; i < gZMPx.size(); i++) {
-
-		fb << gZMPx[i] << " " << gZMPy[i] << endl;
-	
-	}
-	
 }

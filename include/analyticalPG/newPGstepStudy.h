@@ -167,49 +167,31 @@ class CnewPGstepStudy
 		 *              !!IMPORTANT!!: since there is nothing before the first
 		 *           half step, the first slide parameter must always be 0.\n
 		 */
-		void drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+		void drawSeqStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+
+		void drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+
+		void drawSeqSlidedHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet, double downBound, double upBound, double leftBound, double rightBound);
+
+		void plotOneDimensionCOMZMPSeqStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable);
+
+		void plotOneDimensionCOMZMPSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);
+
+		void plotOneDimensionCOMZMPSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);		
 
 
 
-// 		void setSteps(
-// 			MAL_VECTOR(,double) vect_input
-// 			);
-// 
-// 		MAL_VECTOR(,double) getSteps()
-// 		{
-// 			return mp_sseq;
-// 		};
-// 
-// 		MAL_VECTOR(,double) getRadJointValues()
-// 		{
-// 
-// 			return mp_jointsRadValues;
-// 
-// 		};
-
-
-		void plotOneDimensionCOMtrajectory(ofstream & fb, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5);
-
-
-
-		void produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);		
+		void produceOneStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectStep_input, char leftOrRightFootStable);		
 
 		void produceOneUPHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
 
 		void produceOneDOWNHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectStep_input, char leftOrRightFootStable);
 
-		void produceSeqStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double stepHeight, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
+		void produceSeqStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		void produceSeqHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 		void produceSeqSlidedHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
-
-
-
-
-		void plotGlobalLinkedCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
-
-		void plotGlobalSeparateCOMZMP(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 
 	private:
@@ -230,11 +212,6 @@ class CnewPGstepStudy
 
 
 		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
-
-
-		void produceGlobalLinkedCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);	
-
-		void produceGlobalSeparateCOMZMP(vector<double> & gCOMx, vector<double> & gCOMy, vector<double> & gZMPx, vector<double> & gZMPy, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vectSteps_input, char leftOrRightFootStable);
 
 
 };
