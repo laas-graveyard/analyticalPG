@@ -212,7 +212,6 @@ void CnewPGstepStudy::drawSeqStepFeatures(ofstream & fb, double incrTime, double
 	fb << endl;	
 }
 
-
 void CnewPGstepStudy::drawSeqHalfStepFeatures(ofstream & fb, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable, double coefFeet)
 {
 
@@ -646,6 +645,31 @@ void CnewPGstepStudy::plotOneDimensionCOMZMPSeqStep(ofstream & fb, char whichDim
 	}
 }
 
+void CnewPGstepStudy::plotFootHeightSeqStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable) {
+
+	StepFeatures stepF;
+	produceSeqStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, t4, t5, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='L') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.leftfootHeight[i] << endl; 
+	}
+	fb << endl << endl;	
+
+	}
+	else if(whichDimension=='R') {
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.rightfootHeight[i] << endl; 
+	}
+	fb << endl << endl;
+	
+	}
+}
+
 void CnewPGstepStudy::plotOneDimensionCOMZMPSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable){
 
 	StepFeatures stepF;
@@ -683,6 +707,31 @@ void CnewPGstepStudy::plotOneDimensionCOMZMPSeqHalfStep(ofstream & fb, char whic
 	}
 	fb << endl << endl;
 	//After 3 endl, new index in gnuplot.
+	
+	}
+}
+
+void CnewPGstepStudy::plotFootHeightSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable){
+
+	StepFeatures stepF;
+	produceSeqHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='L') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.leftfootHeight[i] << endl; 
+	}
+	fb << endl << endl;	
+
+	}
+	else if(whichDimension=='R') {
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.rightfootHeight[i] << endl; 
+	}
+	fb << endl << endl;
 	
 	}
 }
@@ -728,6 +777,30 @@ void CnewPGstepStudy::plotOneDimensionCOMZMPSeqSlidedHalfStep(ofstream & fb, cha
 	}
 }
 
+void CnewPGstepStudy::plotFootHeightSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable){
+
+	StepFeatures stepF;
+	produceSeqSlidedHalfStepFeatures(stepF, incrTime, zc, g, t1, t2, t3, vect_input, leftOrRightFootStable);
+
+	if(whichDimension=='L') {
+	
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.leftfootHeight[i] << endl; 
+	}
+	fb << endl << endl;	
+
+	}
+	else if(whichDimension=='R') {
+
+	for(int i=0; i < stepF.size-1 ; i++)
+	{
+		fb << (double) i*incrTime << "  " << stepF.rightfootHeight[i] << endl; 
+	}
+	fb << endl << endl;
+	
+	}
+}
 
 
 
@@ -961,18 +1034,54 @@ double searchVinit (double g, double zc, double delta0, double deltaX, double de
 void CnewPGstepStudy::genCOMZMPtrajectory(vector<double> & outputCOM, vector<double> & outputZMP, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5)
 {
 
+	double sensitivityLimit = 0.00001; //because of the instability of the formula.
+
 	outputCOM.clear();
 	outputZMP.clear();
 
 	double vinit = searchVinit(g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0);
 
+	if(abs(deltaX) < sensitivityLimit && abs(deltaX2) < sensitivityLimit) {
 	for(double i = 0.0 ; i < t5 ; i += incrTime)
-	{
+	{		
+		outputCOM.push_back(delta0);
+		outputZMP.push_back(delta0);
+	}
+	}
+	else {
+
+		int count = 0;
+		int countSav = 0;
+		//double minVal = 99999999;
+		double valPrev = 99999999;
+		double valTmp;
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
+		{
+			
 		//fb << i << " " << hVinit(i, g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, vinit) << endl;
 		vector<double> ComZmp = hVinit(i, g, zc, delta0, deltaX, deltaX2, t1, t2, t3, t4, t5, 0, vinit);
 
-		outputCOM.push_back(ComZmp[0]);
+		outputCOM.push_back(ComZmp[0]);		
 		outputZMP.push_back(ComZmp[1]);
+
+		valTmp = abs(ComZmp[0] - delta0 - deltaX - deltaX2);
+		if(valTmp < valPrev) {
+			countSav = count;
+			valPrev = valTmp;
+			}
+		count++;
+		}
+		
+		//again, due to the instability of the formula:
+		if(countSav != outputCOM.size()-1) {
+		for(unsigned int i = countSav ; i < outputCOM.size() ; i++)
+		{				
+		outputCOM[i] = (outputCOM[countSav]*(outputCOM.size()-1-i) + (delta0 + deltaX + deltaX2)*(i-countSav))/(outputCOM.size()-1-countSav);		
+		}	
+		}
+		
+
+		
 	}
 
 }
@@ -1014,7 +1123,7 @@ void CnewPGstepStudy::genFOOTposition(vector<double> & outputX, vector<double> &
 }
 
 
-void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3, double t4, double t5)
+void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3, double t4, double t5)
 {
 
 	output.clear();
@@ -1022,16 +1131,16 @@ void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, do
 	for(double i = 0.0 ; i < t5 ; i += incrTime)
 	{
 
-		if(i < t2)
+		if(i < t2+delay)
 		{
 
 			output.push_back(0);
 
 		}
-		else if(i < t3)
+		else if(i < t3-delay)
 		{
 
-			output.push_back( 16*heightMax/pow(t3-t2,4.0)*pow(i-t2,4.0)  -  32*heightMax/pow(t3-t2,3.0)*pow(i-t2,3.0)  +  16*heightMax/pow(t3-t2,2.0)*pow(i-t2,2.0));
+			output.push_back( 16*heightMax/pow(t3-t2-2*delay,4.0)*pow(i-t2-delay,4.0)  -  32*heightMax/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0)  +  16*heightMax/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0));
 
 		}
 		else
@@ -1045,7 +1154,7 @@ void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, do
 
 }
 
-void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3)
+void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3)
 {
 
 	output.clear();
@@ -1053,7 +1162,7 @@ void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTi
 	for(double i = 0.0 ; i < t3 ; i += incrTime)
 	{
 
-		if(i < t2)
+		if(i < t2+delay)
 		{
 
 			output.push_back(0);
@@ -1062,7 +1171,7 @@ void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTi
 		else
 		{
 
-			output.push_back( -2*heightMax/pow(t3-t2,3.0)*pow(i-t2,3.0) + 3*heightMax/pow(t3-t2,2.0)*pow(i-t2,2.0));
+			output.push_back( -2*heightMax/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0) + 3*heightMax/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0));
 
 		}
 
@@ -1070,7 +1179,7 @@ void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTi
 
 }
 
-void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3)
+void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3)
 {
 
 	output.clear();
@@ -1078,10 +1187,10 @@ void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTi
 	for(double i = 0.0 ; i < t3 ; i += incrTime)
 	{
 
-		if(i < t1)
+		if(i < t1-delay)
 		{
 
-			output.push_back( -2*heightMax/pow(0-t1,3.0)*pow(i-t1,3.0)  +  3*heightMax/pow(0-t1,2.0)*pow(i-t1,2.0));
+			output.push_back( -2*heightMax/pow(0-t1+delay,3.0)*pow(i-t1+delay,3.0)  +  3*heightMax/pow(0-t1+delay,2.0)*pow(i-t1+delay,2.0));
 
 		}
 		else 
@@ -1112,7 +1221,7 @@ void CnewPGstepStudy::genFOOTorientation(vector<double> & output, double incrTim
 		else if(i < t3-delay)
 		{
 
-			output.push_back( initOrient + (-2/pow(t3-t2,3.0)*pow(i-t2,3.0) + 3/pow(t3-t2,2.0)*pow(i-t2,2.0))*(endOrient - initOrient) );
+			output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
 
 		}
 		else
@@ -1144,7 +1253,7 @@ void CnewPGstepStudy::genWAISTorientation(vector<double> & output, double incrTi
 		else if(i < t3-delay)
 		{
 
-			output.push_back( initOrient + (-2/pow(t3-t2,3.0)*pow(i-t2,3.0) + 3/pow(t3-t2,2.0)*pow(i-t2,2.0))*(endOrient - initOrient) );
+			output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
 
 		}
 		else
@@ -1326,13 +1435,13 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 
 	vector<double> footXtraj;
 	vector<double> footYtraj;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], 0.02, t1, t2, t3, t4, t5);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], 0.04, t1, t2, t3, t4, t5);
 
 	vector<double> footHeight;
-	genFOOTheight(footHeight, incrTime, stepHeight, t1, t2, t3, t4, t5);
+	genFOOTheight(footHeight, incrTime, stepHeight, 0.02, t1, t2, t3, t4, t5);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], 0.02, t1, t2, t3, t4, t5);
+	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], 0.04, t1, t2, t3, t4, t5);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1402,13 +1511,13 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], 0.02, t1, t2, t3, t3, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], 0.04, t1, t2, t3, t3, t3);
 
 	vector<double> footHeight;
-	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], t1, t2, t3);
+	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], 0.02, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, 0.02, t1, t2, t3, t3, t3);
+	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, 0.04, t1, t2, t3, t3, t3);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1478,13 +1587,13 @@ void CnewPGstepStudy::produceOneDOWNHalfStepFeatures(StepFeatures & stepF, doubl
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], 0.02, 0, 0, t1, t2, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], 0.04, 0, 0, t1, t2, t3);
 
 	vector<double> footHeight;
-	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], t1, t2, t3);
+	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], 0.02, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.02, 0, 0, t1, t2, t3);
+	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.04, 0, 0, t1, t2, t3);
 
 	vector<double> waistOrient;
 	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.02, 0, 0, t1, t2, t3);

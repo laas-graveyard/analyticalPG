@@ -1,0 +1,4 @@
+set term postscript eps enhanced
+set output "gnupRightHeight.eps"
+unset key
+plot "gnupRightHeight.dat" index 0 w l

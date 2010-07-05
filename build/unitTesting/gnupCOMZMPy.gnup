@@ -1,0 +1,5 @@
+set term postscript eps enhanced
+set output "gnupCOMZMPy.eps"
+unset key
+plot "gnupCOMZMPy.dat" index 0 w l, "gnupCOMZMPy.dat" index 1 w l 
+

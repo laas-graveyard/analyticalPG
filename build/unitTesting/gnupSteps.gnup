@@ -1,0 +1,6 @@
+set term postscript eps enhanced
+set output "gnupSteps.eps"
+set size ratio 1
+unset key
+plot "gnupSteps.dat" index 0 w l lt 1 lw 0.5 lc 1, "gnupSteps.dat" index 1 w l lt 2 lw 0.5 lc 2, "gnupSteps.dat" index 2 w l lt 2 lw 0.5 lc 2, "gnupSteps.dat" index 3 w l lt 1 lw 0.5 lc 3, "gnupSteps.dat" index 4 w l lt 1 lw 0.5 lc 4 
+

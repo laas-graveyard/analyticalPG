@@ -177,7 +177,14 @@ class CnewPGstepStudy
 
 		void plotOneDimensionCOMZMPSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);
 
-		void plotOneDimensionCOMZMPSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);		
+		void plotOneDimensionCOMZMPSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);
+
+		void plotFootHeightSeqStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, double t4, double t5, vector<double> vect_input, char leftOrRightFootStable);
+
+		void plotFootHeightSeqHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);
+		
+		void plotFootHeightSeqSlidedHalfStep(ofstream & fb, char whichDimension, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vect_input, char leftOrRightFootStable);
+
 
 
 
@@ -200,11 +207,11 @@ class CnewPGstepStudy
 
 		void genFOOTposition(vector<double>& outputX, vector<double>& outputY, double incrTime, double xinit, double yinit, double xend, double yend, double delay, double t1, double t2, double t3, double t4, double t5);
 
-		void genFOOTheight(vector<double>& output, double incrTime, double heightMax, double t1, double t2, double t3, double t4, double t5);
+		void genFOOTheight(vector<double>& output, double incrTime, double heightMax, double delay, double t1, double t2, double t3, double t4, double t5);
 
-		void genFOOTupDOWNheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3);
+		void genFOOTupDOWNheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3);
 
-		void genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double t1, double t2, double t3);
+		void genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3);
 
 		void genFOOTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5);
 

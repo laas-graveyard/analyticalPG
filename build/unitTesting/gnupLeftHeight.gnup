@@ -1,0 +1,4 @@
+set term postscript eps enhanced
+set output "gnupLeftHeight.eps"
+unset key
+plot "gnupLeftHeight.dat" index 0 w l
