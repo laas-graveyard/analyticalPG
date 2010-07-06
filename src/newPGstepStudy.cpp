@@ -3,6 +3,9 @@
 
 #include "newPGstepStudy.h"
 
+#define DELAY_1 0.1
+#define DELAY_2 0.14
+
 using namespace std;
 
 CnewPGstepStudy::CnewPGstepStudy()
@@ -1067,8 +1070,8 @@ void CnewPGstepStudy::genCOMZMPtrajectory(vector<double> & outputCOM, vector<dou
 		valTmp = abs(ComZmp[0] - delta0 - deltaX - deltaX2);
 		if(valTmp < valPrev) {
 			countSav = count;
-			valPrev = valTmp;
 			}
+		valPrev = valTmp;
 		count++;
 		}
 		
@@ -1435,13 +1438,13 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 
 	vector<double> footXtraj;
 	vector<double> footYtraj;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], 0.04, t1, t2, t3, t4, t5);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], DELAY_2, t1, t2, t3, t4, t5);
 
 	vector<double> footHeight;
-	genFOOTheight(footHeight, incrTime, stepHeight, 0.02, t1, t2, t3, t4, t5);
+	genFOOTheight(footHeight, incrTime, stepHeight, DELAY_1, t1, t2, t3, t4, t5);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], 0.04, t1, t2, t3, t4, t5);
+	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], DELAY_2, t1, t2, t3, t4, t5);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1460,7 +1463,7 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 	}
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[9], 0.02, t1, t2, t3, t4, t5);
+	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[9], DELAY_1, t1, t2, t3, t4, t5);
 
 
 	stepF.comTrajX = comTrajX;
@@ -1511,13 +1514,13 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], 0.04, t1, t2, t3, t3, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], DELAY_2, t1, t2, t3, t3, t3);
 
 	vector<double> footHeight;
-	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], 0.02, t1, t2, t3);
+	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], DELAY_1, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, 0.04, t1, t2, t3, t3, t3);
+	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, DELAY_2, t1, t2, t3, t3, t3);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1536,7 +1539,7 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	}
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, 0, 0.02, t1, t2, t3, t3, t3);
+	genWAISTorientation(waistOrient, incrTime, 0, 0, DELAY_1, t1, t2, t3, t3, t3);
 
 
 	stepF.comTrajX = comTrajX;
@@ -1587,16 +1590,16 @@ void CnewPGstepStudy::produceOneDOWNHalfStepFeatures(StepFeatures & stepF, doubl
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], 0.04, 0, 0, t1, t2, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], DELAY_2, 0, 0, t1, t2, t3);
 
 	vector<double> footHeight;
-	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], 0.02, t1, t2, t3);
+	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], DELAY_1, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.04, 0, 0, t1, t2, t3);
+	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_2, 0, 0, t1, t2, t3);
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], 0.02, 0, 0, t1, t2, t3);
+	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_1, 0, 0, t1, t2, t3);
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;

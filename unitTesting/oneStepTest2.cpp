@@ -101,9 +101,9 @@ int main (int argc, char *argv[]) {
 
 	NPSS->plotOneDimensionCOMZMPSeqSlidedHalfStep(ofst_comzmpy, 'y', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right); 
 
-	NPSS->plotFootHeightSeqSlidedHalfStep(ofst_leftheight, 'x', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right);  
+	NPSS->plotFootHeightSeqSlidedHalfStep(ofst_leftheight, 'L', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right);  
 
-	NPSS->plotFootHeightSeqSlidedHalfStep(ofst_rightheight, 'y', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right); 
+	NPSS->plotFootHeightSeqSlidedHalfStep(ofst_rightheight, 'R', incrTime, body_height, gravity, t1, t2, t3, stepsVect, left_or_right); 
 }
 
    delete NPSS;
