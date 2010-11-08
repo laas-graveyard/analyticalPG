@@ -3,8 +3,8 @@
 
 #include "newPGstepStudy.h"
 
-#define DELAY_1 0.1
-#define DELAY_2 0.14
+#define DELAY_1 0.005
+#define DELAY_2 0.2
 
 using namespace std;
 
@@ -1090,41 +1090,112 @@ void CnewPGstepStudy::genCOMZMPtrajectory(vector<double> & outputCOM, vector<dou
 }
 
 
-void CnewPGstepStudy::genFOOTposition(vector<double> & outputX, vector<double> & outputY, double incrTime, double xinit, double yinit, double xend, double yend, double delay, double t1, double t2, double t3, double t4, double t5)
+void CnewPGstepStudy::genFOOTposition(vector<double> & outputX, vector<double> & outputY, double incrTime, double xinit, double yinit, double xend, double yend, double delay, double t1, double t2, double t3, double t4, double t5, char du)
 {
 
-	outputX.clear();
-	outputY.clear();
+	if(du == '2') {
 
-	for(double i = 0.0 ; i < t5 ; i += incrTime)
-	{
-
-		if(i < t2+delay)
+		outputX.clear();
+		outputY.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			outputX.push_back(xinit);
-			outputY.push_back(yinit);
-
+	
+			if(i < t2+delay)
+			{
+	
+				outputX.push_back(xinit);
+				outputY.push_back(yinit);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				outputX.push_back(xinit + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(xend-xinit));
+				outputY.push_back(yinit + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(yend-yinit));
+	
+			}
+			else
+			{
+	
+				outputX.push_back(xend);
+				outputY.push_back(yend);
+	
+			}
+	
 		}
-		else if(i < t3-delay)
+
+	}
+	
+	if(du == 'd') {
+
+		outputX.clear();
+		outputY.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			outputX.push_back(xinit + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(xend-xinit));
-			outputY.push_back(yinit + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(yend-yinit));
-
+	
+			if(i < t2)
+			{
+	
+				outputX.push_back(xinit);
+				outputY.push_back(yinit);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				outputX.push_back(xinit + (-2/pow(t3-t2-delay,3.0)*pow(i-t2,3.0)+3/pow(t3-t2-delay,2.0)*pow(i-t2,2.0))*(xend-xinit));
+				outputY.push_back(yinit + (-2/pow(t3-t2-delay,3.0)*pow(i-t2,3.0)+3/pow(t3-t2-delay,2.0)*pow(i-t2,2.0))*(yend-yinit));
+	
+			}
+			else
+			{
+	
+				outputX.push_back(xend);
+				outputY.push_back(yend);
+	
+			}
+	
 		}
-		else
+
+	}
+
+	if(du == 'u') {
+
+		outputX.clear();
+		outputY.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			outputX.push_back(xend);
-			outputY.push_back(yend);
-
+	
+			if(i < t2+delay)
+			{
+	
+				outputX.push_back(xinit);
+				outputY.push_back(yinit);
+	
+			}
+			else if(i < t3)
+			{
+	
+				outputX.push_back(xinit + (-2/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0))*(xend-xinit));
+				outputY.push_back(yinit + (-2/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0)+3/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0))*(yend-yinit));
+	
+			}
+			else
+			{
+	
+				outputX.push_back(xend);
+				outputY.push_back(yend);
+	
+			}
+	
 		}
 
 	}
 
 }
-
 
 void CnewPGstepStudy::genFOOTheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3, double t4, double t5)
 {
@@ -1171,10 +1242,16 @@ void CnewPGstepStudy::genFOOTdownUPheight(vector<double> & output, double incrTi
 			output.push_back(0);
 
 		}
+		else if(i < t3-delay)
+		{
+
+			output.push_back( -2*heightMax/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3*heightMax/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0));
+
+		}
 		else
 		{
 
-			output.push_back( -2*heightMax/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0) + 3*heightMax/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0));
+			output.push_back(heightMax);
 
 		}
 
@@ -1189,14 +1266,15 @@ void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTi
 
 	for(double i = 0.0 ; i < t3 ; i += incrTime)
 	{
-
-		if(i < t1-delay)
+		if(i < delay) {
+			output.push_back(heightMax);
+		} else if(i < t1-delay)
 		{
 
-			output.push_back( -2*heightMax/pow(0-t1+delay,3.0)*pow(i-t1+delay,3.0)  +  3*heightMax/pow(0-t1+delay,2.0)*pow(i-t1+delay,2.0));
+			output.push_back( -2*heightMax/pow(delay-t1+delay,3.0)*pow(i-t1+delay,3.0)  +  3*heightMax/pow(delay-t1+delay,2.0)*pow(i-t1+delay,2.0));
 
 		}
-		else 
+		else
 		{
 
 			output.push_back(0);
@@ -1207,31 +1285,95 @@ void CnewPGstepStudy::genFOOTupDOWNheight(vector<double> & output, double incrTi
 
 }
 
-void CnewPGstepStudy::genFOOTorientation(vector<double> & output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5)
+void CnewPGstepStudy::genFOOTorientation(vector<double> & output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5, char du)
 {
 
-	output.clear();
+	if(du == '2') {
 
-	for(double i = 0.0 ; i < t5 ; i += incrTime)
-	{
-
-		if(i < t2+delay)
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			output.push_back(initOrient);
-
+	
+			if(i < t2+delay)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
 		}
-		else if(i < t3-delay)
+
+	}
+
+	if(du == 'd') {
+
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
-
+	
+			if(i < t2)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-delay,3.0)*pow(i-t2,3.0) + 3/pow(t3-t2-delay,2.0)*pow(i-t2,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
 		}
-		else
+
+	}
+
+	if(du == 'u') {
+
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			output.push_back(endOrient);
-
+	
+			if(i < t2+delay)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
 		}
 
 	}
@@ -1239,34 +1381,97 @@ void CnewPGstepStudy::genFOOTorientation(vector<double> & output, double incrTim
 }
 
 
-void CnewPGstepStudy::genWAISTorientation(vector<double> & output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5)
+void CnewPGstepStudy::genWAISTorientation(vector<double> & output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5, char du)
 {
 
-	output.clear();
+	if(du == '2') {
 
-	for(double i = 0.0 ; i < t5 ; i += incrTime)
-	{
-
-		if(i < t2+delay)
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
 		{
-
-			output.push_back(initOrient);
-
-		}
-		else if(i < t3-delay)
-		{
-
-			output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
-
-		}
-		else
-		{
-
-			output.push_back(endOrient);
-
+	
+			if(i < t2+delay)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-2*delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-2*delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
 		}
 
 	}
+	if(du == 'd') {
+
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
+		{
+	
+			if(i < t2)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3-delay)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-delay,3.0)*pow(i-t2,3.0) + 3/pow(t3-t2-delay,2.0)*pow(i-t2,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
+		}
+
+	}
+	if(du == 'u') {
+
+		output.clear();
+	
+		for(double i = 0.0 ; i < t5 ; i += incrTime)
+		{
+	
+			if(i < t2+delay)
+			{
+	
+				output.push_back(initOrient);
+	
+			}
+			else if(i < t3)
+			{
+	
+				output.push_back( initOrient + (-2/pow(t3-t2-delay,3.0)*pow(i-t2-delay,3.0) + 3/pow(t3-t2-delay,2.0)*pow(i-t2-delay,2.0))*(endOrient - initOrient) );
+	
+			}
+			else
+			{
+	
+				output.push_back(endOrient);
+	
+			}
+	
+		}
+
+	}
+
 
 }
 
@@ -1438,13 +1643,13 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 
 	vector<double> footXtraj;
 	vector<double> footYtraj;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], DELAY_2, t1, t2, t3, t4, t5);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectStep_input[3], vectStep_input[4], vectStep_input[0]+vectStep_input[7], vectStep_input[1]+vectStep_input[8], DELAY_2, t1, t2, t3, t4, t5, '2');
 
 	vector<double> footHeight;
 	genFOOTheight(footHeight, incrTime, stepHeight, DELAY_1, t1, t2, t3, t4, t5);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], DELAY_2, t1, t2, t3, t4, t5);
+	genFOOTorientation(footOrient, incrTime, vectStep_input[5], vectStep_input[9], DELAY_2, t1, t2, t3, t4, t5, '2');
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1463,7 +1668,7 @@ void CnewPGstepStudy::produceOneStepFeatures(StepFeatures & stepF, double incrTi
 	}
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[9], DELAY_1, t1, t2, t3, t4, t5);
+	genWAISTorientation(waistOrient, incrTime, 0, vectStep_input[9], DELAY_1, t1, t2, t3, t4, t5, '2');
 
 
 	stepF.comTrajX = comTrajX;
@@ -1514,13 +1719,13 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], DELAY_2, t1, t2, t3, t3, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, vectUPHalfStep_input[3], vectUPHalfStep_input[4], vectUPHalfStep_input[0], vectUPHalfStep_input[1]+leftRightCoef*vectUPHalfStep_input[6], DELAY_2, t1, t2, t3, t3, t3, 'u');
 
 	vector<double> footHeight;
 	genFOOTdownUPheight(footHeight, incrTime, vectUPHalfStep_input[7], DELAY_1, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, DELAY_2, t1, t2, t3, t3, t3);
+	genFOOTorientation(footOrient, incrTime, vectUPHalfStep_input[5], 0, DELAY_2, t1, t2, t3, t3, t3, 'u');
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;
@@ -1539,7 +1744,7 @@ void CnewPGstepStudy::produceOneUPHalfStepFeatures(StepFeatures & stepF, double 
 	}
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, 0, DELAY_1, t1, t2, t3, t3, t3);
+	genWAISTorientation(waistOrient, incrTime, 0, 0, DELAY_1, t1, t2, t3, t3, t3, 'u');
 
 
 	stepF.comTrajX = comTrajX;
@@ -1590,16 +1795,16 @@ void CnewPGstepStudy::produceOneDOWNHalfStepFeatures(StepFeatures & stepF, doubl
 	vector<double> footYtraj;
 	int leftRightCoef = 0;	
 	if(leftOrRightFootStable == 'L') leftRightCoef = -1; else leftRightCoef = 1;
-	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], DELAY_2, 0, 0, t1, t2, t3);
+	genFOOTposition(footXtraj, footYtraj, incrTime, 0, leftRightCoef*vectDOWNHalfStep_input[0], vectDOWNHalfStep_input[2], vectDOWNHalfStep_input[3], DELAY_2, 0, 0, t1, t2, t3, 'd');
 
 	vector<double> footHeight;
 	genFOOTupDOWNheight(footHeight, incrTime, vectDOWNHalfStep_input[1], DELAY_1, t1, t2, t3);
 
 	vector<double> footOrient;
-	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_2, 0, 0, t1, t2, t3);
+	genFOOTorientation(footOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_2, 0, 0, t1, t2, t3, 'd');
 
 	vector<double> waistOrient;
-	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_1, 0, 0, t1, t2, t3);
+	genWAISTorientation(waistOrient, incrTime, 0, vectDOWNHalfStep_input[4], DELAY_1, 0, 0, t1, t2, t3, 'd');
 
 	vector<double> stablefootXtraj;
 	vector<double> stablefootYtraj;

@@ -205,7 +205,7 @@ class CnewPGstepStudy
 
 		void genCOMZMPtrajectory(vector<double>& outputCOM, vector<double>& outputZMP, double incrTime, double zc, double g, double delta0, double deltaX, double deltaX2, double t1, double t2, double t3, double t4, double t5);
 
-		void genFOOTposition(vector<double>& outputX, vector<double>& outputY, double incrTime, double xinit, double yinit, double xend, double yend, double delay, double t1, double t2, double t3, double t4, double t5);
+		void genFOOTposition(vector<double>& outputX, vector<double>& outputY, double incrTime, double xinit, double yinit, double xend, double yend, double delay, double t1, double t2, double t3, double t4, double t5, char dh);
 
 		void genFOOTheight(vector<double>& output, double incrTime, double heightMax, double delay, double t1, double t2, double t3, double t4, double t5);
 
@@ -213,9 +213,9 @@ class CnewPGstepStudy
 
 		void genFOOTdownUPheight(vector<double> & output, double incrTime, double heightMax, double delay, double t1, double t2, double t3);
 
-		void genFOOTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5);
+		void genFOOTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5, char dh);
 
-		void genWAISTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5);
+		void genWAISTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5, char dh);
 
 
 		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
