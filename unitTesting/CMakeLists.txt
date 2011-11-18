@@ -30,7 +30,7 @@ ADD_EXECUTABLE( npss oneStepTest2.cpp)
 SET_TARGET_PROPERTIES( npss
 	              PROPERTIES
 	              COMPILE_FLAGS ${${PROJECT_NAME}_test_CXXFLAGS}
-          	      LINK_FLAGS "${${PROJECT_NAME}_test_LDFLAGS} -Wl,-R${PROJECT_SOURCE_DIR}/build/src ${PROJECT_SOURCE_DIR}/build/src/lib${PROJECT_NAME}.so"
+          	      LINK_FLAGS "${${PROJECT_NAME}_test_LDFLAGS} -Wl,-R${CMAKE_CURRENT_BINARY_DIR}/../src ${CMAKE_CURRENT_BINARY_DIR}/../src/lib${PROJECT_NAME}.so"
 
 )
 
