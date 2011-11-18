@@ -19,7 +19,9 @@
 #include <vector>
 #include <set>
 
+#ifndef PI
 #define PI 3.14159265359
+#endif
 
 using namespace std;
 
@@ -50,7 +52,7 @@ class CnewPGstepStudy
 		/*!
 		 * Constructor.
 		 */
-		CnewPGstepStudy();
+		CnewPGstepStudy(double stepLength = 2.0);
 
 		/*!
 		 * Destructor.
@@ -200,6 +202,8 @@ class CnewPGstepStudy
 
 		void produceSeqSlidedHalfStepFeatures(StepFeatures & stepF, double incrTime, double zc, double g, double t1, double t2, double t3, vector<double> vectSteps_input, char leftOrRightFootStable);
 
+		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
+
 
 	private:
 
@@ -217,9 +221,9 @@ class CnewPGstepStudy
 
 		void genWAISTorientation(vector<double>& output, double incrTime, double initOrient, double endOrient, double delay, double t1, double t2, double t3, double t4, double t5, char dh);
 
-
-		void addStepFeaturesWithSlide(StepFeatures & stepF1, StepFeatures & stepF2, double negativeSlideTime); 
-
+		double stepLength_;
+                double delay1;
+                double delay2;
 
 };
 #endif
